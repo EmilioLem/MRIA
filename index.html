@@ -19,6 +19,7 @@
   <!-- Termina prueba -->
   <h3>640 x 480 current resolution</h3>
   <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"></p>
+  <br><input type="text" id="typeFil" placeholder="l, r, g, b" value="l">
 
   <button onclick="getPixel()">getPixel once</button>
   <button onclick="setInterval(getPixel, 33.33);">getPixel bucle</button> <br>
@@ -37,6 +38,7 @@
     let contextRGB = canvasRGB.getContext('2d');
 
     var marErCol = document.getElementById("marErCol");
+    var typeFil = document.getElementById("typeFil");
 
     const video = document.querySelector('#video');
     const constraints = {
@@ -93,11 +95,19 @@
         }
         dataUx = data;
         let colRed = marErCol.value;
+        let actTypeFil = typeFil.value;
         let pa = 0; //Cuántos píxeles cambian mucho
 
         for (let i = 1; i <= data.length/4; i++){
-          let pi = (data[i*4 - 4] + data[i*4 - 3] + data[i*4 - 2]) / 3; //Tomar luminosidad
-          //let pi = data[i * 4 - 4]; //Toma R
+          let pi;
+          switch(actTypeFil){
+            case 'l': pi = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3; //Tomar luminosidad
+            break;
+            case 'r': pi = data[i * 4 - 4]; break;
+            case 'g': pi = data[i * 4 - 4]; break;
+            case 'b': pi = data[i * 4 - 4]; break;
+            default: pi = 0;
+          };
           data[i*4-4] = data[i*4 - 3] = data[i*4 - 2] = pi;
         }
 
