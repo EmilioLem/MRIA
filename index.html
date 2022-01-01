@@ -10,6 +10,9 @@
     #canvas{
       display: none;
     }
+    *{
+      font-size: 1.1rem;
+    }
     button{
       font-size: 1.5rem;
       color: saddlebrown;
@@ -21,8 +24,16 @@
 
 <body>
   <h3><span id="currentResolution"></span> current resolution</h3>
-  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"></p>
-  <p>Tipo de filtro: <input type="text" id="typeFil" placeholder="l, r, g, b" value="g"></p><br>
+  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"> (Por ahora no utilizado)</p>
+  <!-- <p>Tipo de filtro: <input type="text" id="typeFil" placeholder="l, r, g, b" value="g"></p><br> -->
+  <p>Tipo de filtro: <select id="typeFil">
+    <ul>
+      <option value="l"><li>Luminosidad</li></option>
+      <option value="r"><li>Canal R</li></option>
+      <option value="g"><li>Canal G</li></option>
+      <option value="b"><li>Canal B</li></option>
+    </ul>
+  </select></p><br>
 
   
   <button onclick="setInterval(getPixel, 33.33);">clickeame!!!</button> <br>
@@ -112,18 +123,15 @@
             break;  //Tomar luminosidad
               
             case 'r':
-            case 'R':
               data[i * 4 - 3] = 0;
               data[i * 4 - 2] = 0;
             break;
 
-            case 'G':
             case 'g':
               data[i * 4 - 4] = 0;
               data[i * 4 - 2] = 0;
             break;
 
-            case 'B':
             case 'b':
               data[i * 4 - 4] = 0;
               data[i * 4 - 3] = 0;
