@@ -1,112 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video?</title>
   <style>
-    /*video{
+    #canvas{
       display: none;
-    }*/
+    }/**/
   </style>
 </head>
+
 <body>
   <!-- Inicia prueba -->
 
   <!-- Termina prueba -->
   <h3>640 x 480 current resolution</h3>
   <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"></p>
-  <button onclick="setInterval(getPixel, 150);">getPixel();</button>
-  <!-- setInterval(getPixel, 33.33); -->
-  
+
+  <button onclick="getPixel()">getPixel once</button>
+  <button onclick="setInterval(getPixel, 33.33);">getPixel bucle</button> <br>
+
   <video autoplay id="video"></video>
   <canvas id="canvas"></canvas>
+  <canvas id="canvasRGB"></canvas>
 
   <script>
     var row = [];
-    var matrix = []; //No usada
     var data, dataUx, dataRe;
     const canvas = document.querySelector('#canvas');
     let context = canvas.getContext('2d');
+
+    const canvasRGB = document.querySelector('#canvasRGB');
+    let contextRGB = canvasRGB.getContext('2d');
+
     var marErCol = document.getElementById("marErCol");
 
     const video = document.querySelector('#video');
     const constraints = {
       video: {
         //16:9 aspect ratio
-         /*width: {
-          ideal: 640//320//256
-          /*min: 1280,
-          ideal: 1920,
-          max: 2560,*
-        },
-        height: {
-          ideal: 480//240//144
-          /*min: 720,
-          ideal: 1080,
-          max: 1440,*
-        },*/
+        /*width: {
+         ideal: 640//320//256
+         /*min: 1280,
+         ideal: 1920,
+         max: 2560,*
+       },
+       height: {
+         ideal: 480//240//144
+         /*min: 720,
+         ideal: 1080,
+         max: 1440,*
+       },*/
         //facingMode: "enviroment"
       },
     };
-    
+
     window.onload = startVideo();
     //setInterval(getPixel, 33.33);
 
-    async function startVideo(){
+    async function startVideo() {
       const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = videoStream;
     };
 
-    function scre(){  //Executed in 0.13 ms average.
+    function scre() {  //Executed in 0.13 ms average.
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      if(canvas.width==0 || canvas.height==0){
+      canvasRGB.width = canvas.width;
+      canvasRGB.height = canvas.height;
+      if (canvas.width == 0 || canvas.height == 0) {
         return false;
-      }else{
+      } else {
         context.drawImage(video, 0, 0);
         return true;
       }
     };
-    function getPixel(){
-      console.time();
-      if(scre()){
+    function getPixel() {
+      console.time("Total");
+      if (scre()) {
         var x = canvas.width;
         var y = canvas.height;
         var k = 0;
         data = context.getImageData(0, 0, x, y).data; //Executed in 3.15 ms average.
-        
-        if(dataRe==undefined){
+
+        if (dataRe == undefined) {
           dataRe = data;
-          console.timeEnd();
+          console.timeEnd("Total");
           return;
         }
         dataUx = data;
         let colRed = marErCol.value;
         let pa = 0; //Cuántos píxeles cambian mucho
-        for(let i= 0; i<data.length; i++){
-          if(i%4!=3){
-            if(dataRe[i]-colRed>data[i] || dataRe[i] + colRed < data[i]){
+
+        for (let i = 1; i <= data.length/4; i++){
+          let pi = (data[i*4 - 4] + data[i*4 - 3] + data[i*4 - 2]) / 3; //Tomar luminosidad
+          //let pi = data[i * 4 - 4]; //Toma R
+          data[i*4-4] = data[i*4 - 3] = data[i*4 - 2] = pi;
+        }
+
+        /*for (let i = 0; i < data.length; i++) { //invierte raros
+          if (i % 4 != 3) {
+            if (dataRe[i] - colRed > data[i] || dataRe[i] + colRed < data[i]) {
               data[i] = 255 - data[i]; //Sólo si hay gran cambio de color
               pa++;
             }
           }
-        }
-        console.log(pa);
+        }*/
+        //console.log(pa);
         drawData(x, y);
         dataRe = dataUx;
-
-
       };
-      console.timeEnd();
+      console.timeEnd("Total");
     };
 
-    function drawData(xx, yy){
-      var aDisplay = context.createImageData(xx, yy);
+    function drawData(xx, yy) {
+      var aDisplay = contextRGB.createImageData(xx, yy);
       var aData = aDisplay.data;
 
-      
       for (let i = 0; i < aData.length; i++) {
         aData[i] = data[i];
         /*if (i % 4 != 3) {
@@ -120,27 +133,28 @@
       aData[1] = 0;
       aData[2] = 0;
       aData[3] = 255;*/
-      context.putImageData(aDisplay, 0, 0);
+      contextRGB.putImageData(aDisplay, 0, 0);
     };
 
-  /*    ////////////////////////
- 
-    for (let i = 1; i <= 1280; i++) { //Descubrir orden de array uni-dimensional
-       let sti = `rgb(${data[i * 4 - 4]}, ${data[i * 4 - 3]}, ${data[i * 4 - 2]})`;
-       console.log(`%c${i}`, `color: ${sti}`);
-     };
- 
-   ////////////////
-   console.log("R: " + data[(640 * 239 + 320) * 4 - 4]);
-      console.log("G: " + data[(640 * 239 + 320) * 4 - 3]);
-      console.log("B: " + data[(640 * 239 + 320) * 4 - 2]);
-      console.log("--------");
-      
-      document.querySelector("body").style.backgroundColor = `rgb(${data[(640 * 239 + 320) * 4 - 4]}, ${data[(640 * 239 + 320) * 4 - 3]}, ${data[(640 * 239 + 320) * 4 - 2]})`;
-     /////////////
- 
-   */
+    /*    ////////////////////////
+   
+      for (let i = 1; i <= 1280; i++) { //Descubrir orden de array uni-dimensional
+         let sti = `rgb(${data[i * 4 - 4]}, ${data[i * 4 - 3]}, ${data[i * 4 - 2]})`;
+         console.log(`%c${i}`, `color: ${sti}`);
+       };
+   
+     ////////////////
+     console.log("R: " + data[(640 * 239 + 320) * 4 - 4]);
+        console.log("G: " + data[(640 * 239 + 320) * 4 - 3]);
+        console.log("B: " + data[(640 * 239 + 320) * 4 - 2]);
+        console.log("--------");
+        
+        document.querySelector("body").style.backgroundColor = `rgb(${data[(640 * 239 + 320) * 4 - 4]}, ${data[(640 * 239 + 320) * 4 - 3]}, ${data[(640 * 239 + 320) * 4 - 2]})`;
+       /////////////
+   
+     */
 
   </script>
 </body>
+
 </html>
