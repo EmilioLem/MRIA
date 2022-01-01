@@ -17,9 +17,9 @@
   <!-- Inicia prueba -->
 
   <!-- Termina prueba -->
-  <h3>640 x 480 current resolution</h3>
+  <h3><span id="currentResolution"></span> current resolution</h3>
   <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"></p>
-  <br><input type="text" id="typeFil" placeholder="l, r, g, b" value="l">
+  <p>Tipo de filtro: <input type="text" id="typeFil" placeholder="l, i, r, g, b" value="l"></p><br>
 
   <button onclick="getPixel()">getPixel once</button>
   <button onclick="setInterval(getPixel, 33.33);">getPixel bucle</button> <br>
@@ -73,6 +73,7 @@
       canvas.height = video.videoHeight;
       canvasRGB.width = canvas.width;
       canvasRGB.height = canvas.height;
+      document.getElementById("currentResolution").innerText = `${canvas.width} x ${canvas.height}`;
       if (canvas.width == 0 || canvas.height == 0) {
         return false;
       } else {
@@ -96,30 +97,44 @@
         dataUx = data;
         let colRed = marErCol.value;
         let actTypeFil = typeFil.value;
-        let pa = 0; //Cuántos píxeles cambian mucho
 
         for (let i = 1; i <= data.length/4; i++){
           let pi;
           switch(actTypeFil){
-            case 'l': pi = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3; //Tomar luminosidad
-            break;
-            case 'r': pi = data[i * 4 - 4]; break;
-            case 'g': pi = data[i * 4 - 4]; break;
-            case 'b': pi = data[i * 4 - 4]; break;
-            default: pi = 0;
+            case 'l': 
+              pi = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+              data[i * 4 - 4] = data[i * 4 - 3] = data[i * 4 - 2] = pi;
+              break;  //Tomar luminosidad
+
+            case 'i': 
+              
+            case 'r': 
+              data[i * 4 - 3] = 0;
+              data[i * 4 - 2] = 0;
+              break;
+            case 'g':
+              data[i * 4 - 4] = 0;
+              data[i * 4 - 2] = 0;
+              break;
+            case 'b':
+              data[i * 4 - 4] = 0;
+              data[i * 4 - 3] = 0;
+              break;
+
+            default: 
+              data[i * 4 - 4] = data[i * 4 - 3] = data[i * 4 - 2] = 0;
+              break;
           };
-          data[i*4-4] = data[i*4 - 3] = data[i*4 - 2] = pi;
+          
         }
 
         /*for (let i = 0; i < data.length; i++) { //invierte raros
           if (i % 4 != 3) {
             if (dataRe[i] - colRed > data[i] || dataRe[i] + colRed < data[i]) {
               data[i] = 255 - data[i]; //Sólo si hay gran cambio de color
-              pa++;
             }
           }
         }*/
-        //console.log(pa);
         drawData(x, y);
         dataRe = dataUx;
       };
@@ -132,17 +147,7 @@
 
       for (let i = 0; i < aData.length; i++) {
         aData[i] = data[i];
-        /*if (i % 4 != 3) {
-          aData[i] = 255;
-        }else{
-          aData[i] = 0;
-        }*/
-        //console.log(i);
       }
-      /*aData[0] = 0;
-      aData[1] = 0;
-      aData[2] = 0;
-      aData[3] = 255;*/
       contextRGB.putImageData(aDisplay, 0, 0);
     };
 
@@ -154,10 +159,7 @@
        };
    
      ////////////////
-     console.log("R: " + data[(640 * 239 + 320) * 4 - 4]);
-        console.log("G: " + data[(640 * 239 + 320) * 4 - 3]);
-        console.log("B: " + data[(640 * 239 + 320) * 4 - 2]);
-        console.log("--------");
+       Los píxeles de la imagen se leen y esciben de izquierda a derecha, y progresivamente hacia abajo. 
         
         document.querySelector("body").style.backgroundColor = `rgb(${data[(640 * 239 + 320) * 4 - 4]}, ${data[(640 * 239 + 320) * 4 - 3]}, ${data[(640 * 239 + 320) * 4 - 2]})`;
        /////////////
