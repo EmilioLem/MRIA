@@ -12,6 +12,8 @@
     }
     *{
       font-size: 1rem;
+      background: black;
+      color: white;
     }
     button{
       font-size: 1.3rem;
@@ -33,13 +35,13 @@
       <option value="g"><li>Canal G</li></option>
       <option value="b"><li>Canal B</li></option>
     </ul>
-  </select></p><br>
-
+  </select></p>
   
-  <button onclick="setInterval(getPixel, 33.33);">clickeame!!!</button> <br>
-
+  <!-- <button onclick="setInterval(getPixel, 33.33);">clickeame!!!</button> <br> -->
+  <h2>Video original:</h2>
   <video autoplay id="video"></video>
   <canvas id="canvas"></canvas>
+  <h2>Alterado:</h2>
   <canvas id="canvasRGB"></canvas>
 
   <script>
