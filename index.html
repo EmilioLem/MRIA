@@ -20,38 +20,33 @@
       color: black;
       background: white;
     }
-    /*button{
-      font-size: 1.3rem;
-      color: saddlebrown;
-      font-weight: bold;
-    }
-    */
   </style>
 </head>
 
 <body>
   <h3><span id="currentResolution"></span> current resolution</h3>
 
-  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="20"> (Por ahora no utilizado)</p>
+  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (Por ahora no utilizado)</p>
 
   <p><u>Tipo de filtro:</u> <select id="typeFil">
     <ul>
       <option value="l"><li>Luminosidad</li></option>
       <option value="o"><li>Original</li></option>
+      <!-- Cool -->
       <optgroup label="Movimiento:" class="optgr">
         <option value="mig"><li>Invertir general</li></option>
-        <option value="mip"><li>Invertir particular</li></option>
+        <option value="mip" selected><li>Invertir particular</li></option>
         <option value="msg"><li>Sólo general</li></option>
         <option value="msp"><li>Sólo particular</li></option>
       </optgroup>
       <!-- El general busca el cambio de píxeles de los 3 canales, el particular se fija y altera cada canal por separado -->
       <optgroup label="Mostrar canales:" class="optgr">
         <option value="r"><li>Canal R</li></option>
-        <option value="b"><li>Canal B</li></option>
         <option value="g"><li>Canal G</li></option>
-        <option value="rb"><li>Canales rb</li></option>
+        <option value="b"><li>Canal B</li></option>
         <option value="rg"><li>Canales rg</li></option>
         <option value="gb"><li>Canales gb</li></option>
+        <option value="rb"><li>Canales rb</li></option>
       </optgroup>
     </ul>
   </select></p>
@@ -72,11 +67,9 @@
   <h2>Alterado:</h2>
   <canvas id="canvasRGB"></canvas>
 
-  <!-- <br><button onclick="setInterval(getPixel, 40)">Presione sólo si no inicia el video automáticamente</button> -->
-
   <script>
     var row = [];
-    var data, dataUx, dataRe;
+    var data, dataRe; //dataUx
     const canvas = document.querySelector('#canvas');
     let context = canvas.getContext('2d');
 
@@ -88,9 +81,9 @@
 
     vidMos = document.getElementById("vidMos");
     vidOcu = document.getElementById("vidOcu");
-    function ajuVideo(){
-      //ifvidMos
-    }
+  
+    var x=0;
+    var y=0;
 
     const video = document.querySelector('#video');
     const constraints = {
@@ -112,116 +105,110 @@
       },
     };
 
-    window.onload = startVideo();
-    setInterval(getPixel, 40);
+    function sleep(ms) {
+     return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    async function startVideo() {
+    window.onload = async function startVideo() {
       const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-      video.srcObject = videoStream;
-    };
-
-    
-
-    function scre() {  //Executed in 0.13 ms average.
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvasRGB.width = canvas.width;
-      canvasRGB.height = canvas.height;
-      document.getElementById("currentResolution").innerText = `${canvas.width} x ${canvas.height}`;
-      if (canvas.width == 0 || canvas.height == 0) {
-        return false;
-      } else {
-        context.drawImage(video, 0, 0);
-        return true;
+      video.srcObject = videoStream;      
+      do{
+        x = video.videoWidth;
+        y = video.videoHeight;
+        await sleep(20);
       }
+      while(x == 0 || y == 0);
+      canvasRGB.width = canvas.width = x;
+      canvasRGB.height = canvas.height = y;
+      document.getElementById("currentResolution").innerText = `${x} x ${y}`;
+      await sleep(1000);
+      context.drawImage(video, 0, 0);
+      dataRe = context.getImageData(0, 0, x, y).data;
+      await sleep(35);
+      setInterval(getPixel, 130);//33.33);
     };
+
     function getPixel() {
       console.time("Total");
-      if (scre()) {
-        var x = canvas.width;
-        var y = canvas.height;
-        var k = 0;
-        data = context.getImageData(0, 0, x, y).data; //Executed in 3.15 ms average.
+      context.drawImage(video, 0, 0);
+      data = context.getImageData(0, 0, x, y).data; //Executed in 3.15 ms average.
+      let colRed = marErCol.value;
+      let actTypeFil = typeFil.value;
+      const toDlong = data.length;
+      var pl=0;
 
-        if (dataRe == undefined) {
-          dataRe = data;
-          console.timeEnd("Total");
-          return;
-        }
-        dataUx = data;
-        let colRed = marErCol.value;
-        let actTypeFil = typeFil.value;
+      if (dataRe == undefined) {
+        dataRe = data; //context.getImageData(0, 0, x, y).data;
+        console.timeEnd("Total");
+        return;
+      }
 
-        for (let i = 1; i <= data.length/4; i++){
-          let pi;
-          switch(actTypeFil){
-            case 'l': 
-              pi = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
-              data[i * 4 - 4] = data[i * 4 - 3] = data[i * 4 - 2] = pi;
+      for (let i = 1; i <= toDlong / 4; i++) {
+        switch (actTypeFil) {
+          case 'l':
+            let pi = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = pi;
             break;  //Tomar luminosidad
 
-            case 'o': break;
+          case 'o': break;
 
-            case 'img': 
-              if(dataRe[i-4] - colRed > data[i-4] || 
-                  dataRe[i-4] + colRed < data[i-4])
-
-              /*for (let i = 0; i < data.length; i++) { //invierte raros
-                 if (i % 4 != 3) {
-                   if (dataRe[i] - colRed > data[i] || dataRe[i] + colRed < data[i]) {
-                    data[i] = 255 - data[i]; //Sólo si hay gran cambio de color
-                  }
-                }
-              }*/
-            break;
-              
-            case 'r':
-              data[i * 4 - 3] = 0;
-              data[i * 4 - 2] = 0;
+          case 'mip': 
+            //
+            let rr, gg, bb;
+            for(let j=4; j>1; j--){ //Analyses RGB values
+              let anteP = dataRe[i * 4 - j]; //Píxel antíguo
+              let actuP = data[i * 4 - j];  //Píxel actual
+              if(anteP - colRed > actuP || anteP + colRed < actuP){
+                dataRe[i * 4 - j] = 0; //255 - actuP;
+                pl++;
+              }
+            }
             break;
 
-            case 'g':
-              data[i * 4 - 4] = 0;
-              data[i * 4 - 2] = 0;
+          case 'r':
+            dataRe[i * 4 - 3] = 0;
+            dataRe[i * 4 - 2] = 0;
             break;
 
-            case 'b':
-              data[i * 4 - 4] = 0;
-              data[i * 4 - 3] = 0;
+          case 'g':
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 2] = 0;
             break;
 
-            case 'rg':
-              data[i * 4 - 2] = 0;
-              break;
+          case 'b':
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 3] = 0;
+            break;
 
-            case 'rb':
-              data[i * 4 - 3] = 0;
-              break;
+          case 'rg':
+            dataRe[i * 4 - 2] = 0;
+            break;
 
-            case 'gb':
-              data[i * 4 - 4] = 0;
-              break;
+          case 'rb':
+            dataRe[i * 4 - 3] = 0;
+            break;
 
-            default: 
-              data[i * 4 - 4] = data[i * 4 - 3] = data[i * 4 - 2] = 0;
-              break;
-          };
-          
-        }
-        drawData(x, y);
-        dataRe = dataUx;
-      };
-      console.timeEnd("Total");
-    };
+          case 'gb':
+            dataRe[i * 4 - 4] = 0;
+            break;
 
-    function drawData(xx, yy) {
-      var aDisplay = contextRGB.createImageData(xx, yy);
+          default:
+            dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
+            break;
+        };
+
+      }
+
+      var aDisplay = contextRGB.createImageData(x, y);
       var aData = aDisplay.data;
-
-      for (let i = 0; i < aData.length; i++) {
-        aData[i] = data[i];
+      for (let i = 0; i < toDlong; i++) {
+        aData[i] = dataRe[i];
       }
       contextRGB.putImageData(aDisplay, 0, 0);
+
+      dataRe = data;
+      console.timeEnd("Total");
+      console.log(pl);
     };
 
     document.getElementById("vidMosBut").addEventListener("click", function(){
@@ -233,25 +220,16 @@
         vidOcu.style.display = "initial";
       });
 
-    /*    
-    Habilitar modo _resaltar reciente_
-
-    No puedo ocular vidMos
-    
-    ////////////////////////
+/*
+////////////////////////
+  
    
-      for (let i = 1; i <= 1280; i++) { //Descubrir orden de array uni-dimensional
-         let sti = `rgb(${data[i * 4 - 4]}, ${data[i * 4 - 3]}, ${data[i * 4 - 2]})`;
-         console.log(`%c${i}`, `color: ${sti}`);
-       };
-   
-     ////////////////
+////////////////
        Los píxeles de la imagen se leen y esciben de izquierda a derecha, y progresivamente hacia abajo. 
         
-        document.querySelector("body").style.backgroundColor = `rgb(${data[(640 * 239 + 320) * 4 - 4]}, ${data[(640 * 239 + 320) * 4 - 3]}, ${data[(640 * 239 + 320) * 4 - 2]})`;
-       /////////////
+/////////////
    
-     */
+*/
 
   </script>
 </body>
