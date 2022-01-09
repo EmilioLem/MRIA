@@ -24,9 +24,9 @@
 </head>
 
 <body>
-  <h3><span id="currentResolution"></span> current resolution</h3>
+  <h3>Resolución actual: <span id="currentResolution"></span></h3>
 
-  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (Por ahora no utilizado)</p>
+  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (En filtros de <b>movimiento</b>)</p>
 
   <p><u>Tipo de filtro:</u> <select id="typeFil">
     <ul>
@@ -137,11 +137,11 @@
       const toDlong = data.length;
       var pl=0;
 
-      if (dataRe == undefined) {
+      /*if (dataRe == undefined) {  //Sustituído en startVideo()
         dataRe = data; //context.getImageData(0, 0, x, y).data;
         console.timeEnd("Total");
         return;
-      }
+      }*/
 
       for (let i = 1; i <= toDlong / 4; i++) {
         switch (actTypeFil) {
@@ -152,9 +152,7 @@
 
           case 'o': break;
 
-          case 'mip': 
-            //
-            let rr, gg, bb;
+          case 'mip':
             for(let j=4; j>1; j--){ //Analyses RGB values
               let anteP = dataRe[i * 4 - j]; //Píxel antíguo
               let actuP = data[i * 4 - j];  //Píxel actual
