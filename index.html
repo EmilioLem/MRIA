@@ -84,6 +84,7 @@
   
     var x=0;
     var y=0;
+    var listo = false;
 
     const video = document.querySelector('#video');
     const constraints = {
@@ -148,7 +149,7 @@
           case 'l':
             let pi = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
             dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = pi;
-            break;  //Tomar luminosidad
+          break;  //Tomar luminosidad
 
           case 'o': break;
 
@@ -161,38 +162,74 @@
                 pl++;
               }
             }
+          break;
+
+          /*case 'mig':
+            let pg = 0;
+            let antePr = dataRe[i * 4 - 4];
+            let antePg = dataRe[i * 4 - 3];
+            let antePb = dataRe[i * 4 - 2];
+            let actuPr = data[i * 4 - 4];
+            let actuPg = data[i * 4 - 3];
+            let actuPb = data[i * 4 - 2];
+            //if(antePr - colRed > actuPr)...
+
+            if( dataRe[]) //Si todas esas condiciones son negativas, hacer algo.
+            //
+
+            for (let j = 4; j > 1; j--) { //Analyses RGB values
+              let anteP = dataRe[i * 4 - j]; //Píxel antíguo
+              let actuP = data[i * 4 - j];  //Píxel actual
+              if (anteP - colRed > actuP || anteP + colRed < actuP) {
+                dataRe[i * 4 - j] = 0; //255 - actuP;
+                pl++;
+              }
+            }
+          break;*/
+
+          case 'msp':
+            for (let j = 4; j > 1; j--) { //Analyses RGB values
+              let anteP = dataRe[i * 4 - j]; //Píxel antíguo
+              let actuP = data[i * 4 - j];  //Píxel actual
+              if (anteP - colRed > actuP || anteP + colRed < actuP) {
+                //Actualy nothing happens    255 - actuP;
+                pl++;
+              }else{
+                dataRe[i * 4 - j] = 0;
+              }
+            }
             break;
 
           case 'r':
             dataRe[i * 4 - 3] = 0;
             dataRe[i * 4 - 2] = 0;
-            break;
+          break;
 
           case 'g':
             dataRe[i * 4 - 4] = 0;
             dataRe[i * 4 - 2] = 0;
-            break;
+          break;
 
           case 'b':
             dataRe[i * 4 - 4] = 0;
             dataRe[i * 4 - 3] = 0;
-            break;
+          break;
 
           case 'rg':
             dataRe[i * 4 - 2] = 0;
-            break;
+          break;
 
           case 'rb':
             dataRe[i * 4 - 3] = 0;
-            break;
+          break;
 
           case 'gb':
             dataRe[i * 4 - 4] = 0;
-            break;
+          break;
 
           default:
             dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
-            break;
+          break;
         };
 
       }
