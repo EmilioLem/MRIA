@@ -126,7 +126,7 @@
       context.drawImage(video, 0, 0);
       dataRe = context.getImageData(0, 0, x, y).data;
       await sleep(35);
-      setInterval(getPixel, 130);//33.33);
+      setInterval(getPixel, 66.66);//130);//33.33);
     };
 
     function getPixel() {
@@ -158,7 +158,7 @@
               let anteP = dataRe[i * 4 - j]; //Píxel antíguo
               let actuP = data[i * 4 - j];  //Píxel actual
               if(anteP - colRed > actuP || anteP + colRed < actuP){
-                dataRe[i * 4 - j] = 0; //255 - actuP;
+                dataRe[i * 4 - j] = 255 - actuP;
                 pl++;
               }
             }
