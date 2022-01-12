@@ -24,8 +24,10 @@
 </head>
 
 <body>
-  <h3>Resolución actual: <span id="currentResolution"></span></h3>
+  <h3>Resolución actual: <span id="currentResolution"></span> px</h3>
   <h3>Fotogramas por segundo: <span id="currentFPS"></span> fps</h3>
+  <p>El programa intenta tomar los 30 fps de la cámara.</p>
+  <h3>Cada fotograma se procesa en: <span id="currentP"></span> ms</h3>
 
   <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (En filtros de <b>movimiento</b>)</p>
 
@@ -127,7 +129,7 @@
       context.drawImage(video, 0, 0);
       dataRe = context.getImageData(0, 0, x, y).data;
       await sleep(35);
-      setInterval(getPixel, 66.66);//130);//33.33);
+      setInterval(getPixel, 33.33);//130);//33.33);
     };
 
     function getPixel() {
@@ -245,6 +247,7 @@
       dataRe = data;
       const finTime = Date.now();
       document.getElementById("currentFPS").innerText = `${Math.round(10000/(finTime-iniTime))/10}`;
+      document.getElementById("currentP").innerText = `${finTime - iniTime}`;
       console.log(pl);
     };
 
