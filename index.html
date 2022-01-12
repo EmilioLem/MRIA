@@ -25,6 +25,7 @@
 
 <body>
   <h3>Resolución actual: <span id="currentResolution"></span></h3>
+  <h3>Fotogramas por segundo: <span id="currentFPS"></span> fps</h3>
 
   <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (En filtros de <b>movimiento</b>)</p>
 
@@ -130,7 +131,7 @@
     };
 
     function getPixel() {
-      console.time("Total");
+      const iniTime = Date.now();
       context.drawImage(video, 0, 0);
       data = context.getImageData(0, 0, x, y).data; //Executed in 3.15 ms average.
       let colRed = marErCol.value;
@@ -242,7 +243,8 @@
       contextRGB.putImageData(aDisplay, 0, 0);
 
       dataRe = data;
-      console.timeEnd("Total");
+      const finTime = Date.now();
+      document.getElementById("currentFPS").innerText = `${Math.round(10000/(finTime-iniTime))/10}`;
       console.log(pl);
     };
 
