@@ -25,7 +25,7 @@
 
 <body>
   <h3>Resolución actual: <span id="currentResolution"></span> px</h3>
-  <h3>Fotogramas por segundo: <span id="currentFPS"></span> fps</h3>
+  <h3>Fotogramas máximos: <span id="currentFPS"></span> fps</h3>
   <p>El programa intenta tomar los 30 fps de la cámara.</p>
   <h3>Cada fotograma se procesa en: <span id="currentP"></span> ms</h3>
 
@@ -37,10 +37,12 @@
       <option value="o"><li>Original</li></option>
       <!-- Cool -->
       <optgroup label="Movimiento:" class="optgr">
-        <option value="mig"><li>Invertir general</li></option>
-        <option value="mip"><li>Invertir particular</li></option>
-        <option value="msg"><li>Sólo general</li></option>
-        <option value="msp" selected><li>Sólo particular</li></option>
+        <option value="mip"><li>Invertir RGB particular</li></option>
+        <option value="msp"><li>Sólo RGB particular</li></option>
+        <option value="msl" selected><li>Sólo Luminosidad en verde (N.A.)</li></option>
+        <option value="msr"><li>Sólo R</li></option>
+        <option value="msg"><li>Sólo G</li></option>
+        <option value="msb"><li>Sólo B</li></option>
       </optgroup>
       <!-- El general busca el cambio de píxeles de los 3 canales, el particular se fija y altera cada canal por separado -->
       <optgroup label="Mostrar canales:" class="optgr">
@@ -71,7 +73,6 @@
   <canvas id="canvasRGB"></canvas>
 
   <script>
-    var row = [];
     var data, dataRe; //dataUx
     const canvas = document.querySelector('#canvas');
     let context = canvas.getContext('2d');
@@ -87,7 +88,6 @@
   
     var x=0;
     var y=0;
-    var listo = false;
 
     const video = document.querySelector('#video');
     const constraints = {
@@ -129,7 +129,7 @@
       context.drawImage(video, 0, 0);
       dataRe = context.getImageData(0, 0, x, y).data;
       await sleep(35);
-      setInterval(getPixel, 33.33);//130);//33.33);
+      setInterval(getPixel, 66.66);//33.33);
     };
 
     function getPixel() {
@@ -140,12 +140,6 @@
       let actTypeFil = typeFil.value;
       const toDlong = data.length;
       var pl=0;
-
-      /*if (dataRe == undefined) {  //Sustituído en startVideo()
-        dataRe = data; //context.getImageData(0, 0, x, y).data;
-        console.timeEnd("Total");
-        return;
-      }*/
 
       for (let i = 1; i <= toDlong / 4; i++) {
         switch (actTypeFil) {
@@ -167,28 +161,17 @@
             }
           break;
 
-          /*case 'mig':
-            let pg = 0;
-            let antePr = dataRe[i * 4 - 4];
-            let antePg = dataRe[i * 4 - 3];
-            let antePb = dataRe[i * 4 - 2];
-            let actuPr = data[i * 4 - 4];
-            let actuPg = data[i * 4 - 3];
-            let actuPb = data[i * 4 - 2];
-            //if(antePr - colRed > actuPr)...
-
-            if( dataRe[]) //Si todas esas condiciones son negativas, hacer algo.
-            //
-
-            for (let j = 4; j > 1; j--) { //Analyses RGB values
-              let anteP = dataRe[i * 4 - j]; //Píxel antíguo
-              let actuP = data[i * 4 - j];  //Píxel actual
-              if (anteP - colRed > actuP || anteP + colRed < actuP) {
-                dataRe[i * 4 - j] = 0; //255 - actuP;
-                pl++;
-              }
+          case 'msl':
+            let actu = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+            let reci = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            /**/if(actu - reci < -25 || actu - reci > 25){
+              dataRe[i * 4 - 4] = 0;
+              dataRe[i * 4 - 3] = reci;
+              dataRe[i * 4 - 2] = 0;
+            }else{
+              dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
             }
-          break;*/
+          break;
 
           case 'msp':
             for (let j = 4; j > 1; j--) { //Analyses RGB values
@@ -201,7 +184,44 @@
                 dataRe[i * 4 - j] = 0;
               }
             }
-            break;
+          break;
+
+          case 'msr':
+            let antePr = dataRe[i * 4 - 4]; //Píxel antíguo
+            let actuPr = data[i * 4 - 4];  //Píxel actual
+            if (antePr - colRed > actuPr || antePr + colRed < actuPr) {
+              //Actualy nothing happens    255 - actuP;
+              pl++;
+            } else {
+              dataRe[i * 4 - 4] = 0;
+            }
+            dataRe[i * 4 - 3] = 0;
+            dataRe[i * 4 - 2] = 0;
+          break;
+          /*case 'msg':
+            let antePg = dataRe[i * 4 - 3]; //Píxel antíguo
+            let actuPg = data[i * 4 - 3];  //Píxel actual
+            if (antePg - colRed > actuPg || antePg + colRed < actuPg) {
+              //Actualy nothing happens    255 - actuP;
+              pl++;
+            } else {
+              dataRe[i * 4 - 3] = 0;
+            }
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 2] = 0;
+          break;
+          case 'msb':
+            let antePb = dataRe[i * 4 - 2]; //Píxel antíguo
+            let actuPb = data[i * 4 - 2];  //Píxel actual
+            if (antePb - colRed > actuPb || antePb + colRed < actuPb) {
+              //Actualy nothing happens    255 - actuP;
+              pl++;
+            } else {
+              dataRe[i * 4 - 2] = 0;
+            }
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 3] = 0;
+          break;*/
 
           case 'r':
             dataRe[i * 4 - 3] = 0;
