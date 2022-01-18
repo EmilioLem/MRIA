@@ -230,9 +230,9 @@
               break;
             }else{
               if(matrix[i-1]-pnre>0){ //O sea que es menos brilloso de lo normal
-                matrix[i - 1] -= (matrix[i - 1] - pnre)/100;
+                matrix[i - 1] -= (matrix[i - 1] - pnre)/1000;
               }else if (matrix[i - 1] - pnre < 0) { //O sea que es más brilloso de lo normal
-                matrix[i - 1] += Math.abs(matrix[i - 1] - pnre) / 100;
+                matrix[i - 1] += Math.abs(matrix[i - 1] - pnre) / 1000;
               }
               //matrix[i - 1] += pnre / (tiempoDe*30); //Añade ligero cambio
             };
