@@ -42,6 +42,7 @@
         <option value='msl'><li>Por cambio de luminosidad(meh)</li></option>
         <option value='mtl' selected><li>Taza de cambio luminosidad x2</li></option>
         <option value='mla'><li>Cambio absoluto (buuu)</li></option>
+        <option value='mpn'><li>píxeles nuevos (No disponible)</li></option>
         <option value='msr'><li>Sólo R</li></option>
         <option value='msg'><li>Sólo G</li></option>
         <option value='msb'><li>Sólo B</li></option>
@@ -90,6 +91,7 @@
   
     var x=0;
     var y=0;
+    var matrix = [];
 
     const video = document.querySelector('#video');
     const constraints = {
@@ -131,7 +133,7 @@
       context.drawImage(video, 0, 0);
       dataRe = context.getImageData(0, 0, x, y).data;
       await sleep(35);
-      setInterval(getPixel, 66.66);//33.33);
+      setInterval(getPixel, 35);//33.33);
     };
 
     function getPixel() {
@@ -142,6 +144,10 @@
       let actTypeFil = typeFil.value;
       const toDlong = data.length;
       var pl=0;
+
+      if(actTypeFil!='mpn'){
+        matrix = [];
+      };
 
       for (let i = 1; i <= toDlong / 4; i++) {
         switch (actTypeFil) {
@@ -196,9 +202,9 @@
             dataRe[i * 4 - 3] = Math.abs(pres - pasa)*2;
             dataRe[i * 4 - 2] = 0;
 
-            if(Math.abs(pres - pasa) * 2>255){
+            /*if(Math.abs(pres - pasa) * 2>255){
               console.log("nos pasamos");
-            }
+            }*/
           break;
 
           //Cambio absoluto de luminosidad, verde o negro
@@ -212,6 +218,28 @@
             } else {
               dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
             }
+        break;
+
+        //Cambio de luminosidad respecto a lo común, píxeles nuevos
+          case 'mpn':
+            //console.log("Si entramos");
+            let pnac = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+            let pnre = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            if (matrix.length < i) {
+              matrix[i - 1] = pnre; //Para completar primera vista del entorno
+              break;
+            }else{
+              if(matrix[i-1]-pnre>0){ //O sea que es menos brilloso de lo normal
+                matrix[i - 1] -= (matrix[i - 1] - pnre)/100;
+              }else if (matrix[i - 1] - pnre < 0) { //O sea que es más brilloso de lo normal
+                matrix[i - 1] += Math.abs(matrix[i - 1] - pnre) / 100;
+              }
+              //matrix[i - 1] += pnre / (tiempoDe*30); //Añade ligero cambio
+            };
+
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 3] = matrix[i-1];//Math.abs(pnac - pnre) * 2;
+            dataRe[i * 4 - 2] = 0;
         break;
 
           ////////////////Sólo movimiento en ciertos canales
