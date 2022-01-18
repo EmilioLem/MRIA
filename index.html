@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset='UTF-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
   <title>Machine Recognition Image Analyser</title>
   <style>
     #canvas, #vidMos{
@@ -24,53 +24,55 @@
 </head>
 
 <body>
-  <h3>Resolución actual: <span id="currentResolution"></span> px</h3>
-  <h3>Fotogramas máximos: <span id="currentFPS"></span> fps</h3>
+  <h3>Resolución actual: <span id='currentResolution'></span> px</h3>
+  <h3>Fotogramas máximos: <span id='currentFPS'></span> fps</h3>
   <p>El programa intenta tomar los 30 fps de la cámara.</p>
-  <h3>Cada fotograma se procesa en: <span id="currentP"></span> ms</h3>
+  <h3>Cada fotograma se procesa en: <span id='currentP'></span> ms</h3>
 
-  <p>Margen de error para diferenciar cambio de color: <input id="marErCol" type="number" value="25"> (En filtros de <b>movimiento</b>)</p>
+  <p>Margen de error para diferenciar cambio de color: <input id='marErCol' type='number' value='25'> (En filtros de <b>movimiento</b>)</p>
 
-  <p><u>Tipo de filtro:</u> <select id="typeFil">
+  <p><u>Tipo de filtro:</u> <select id='typeFil'>
     <ul>
-      <option value="l"><li>Luminosidad</li></option>
-      <option value="o"><li>Original</li></option>
+      <option value='l'><li>Luminosidad</li></option>
+      <option value='o'><li>Original</li></option>
       <!-- Cool -->
-      <optgroup label="Movimiento:" class="optgr">
-        <option value="mip"><li>Invertir RGB particular</li></option>
-        <option value="msp"><li>Sólo RGB particular</li></option>
-        <option value="msl" selected><li>Sólo Luminosidad en verde (N.A.)</li></option>
-        <option value="msr"><li>Sólo R</li></option>
-        <option value="msg"><li>Sólo G</li></option>
-        <option value="msb"><li>Sólo B</li></option>
+      <optgroup label='Movimiento:' class='optgr'>
+        <option value='mip'><li>Invertir RGB particular (nah)</li></option>
+        <option value='msp'><li>Sólo RGB particular(nah)</li></option>
+        <option value='msl'><li>Por cambio de luminosidad(meh)</li></option>
+        <option value='mtl' selected><li>Taza de cambio luminosidad x2</li></option>
+        <option value='mla'><li>Cambio absoluto (buuu)</li></option>
+        <option value='msr'><li>Sólo R</li></option>
+        <option value='msg'><li>Sólo G</li></option>
+        <option value='msb'><li>Sólo B</li></option>
       </optgroup>
       <!-- El general busca el cambio de píxeles de los 3 canales, el particular se fija y altera cada canal por separado -->
-      <optgroup label="Mostrar canales:" class="optgr">
-        <option value="r"><li>Canal R</li></option>
-        <option value="g"><li>Canal G</li></option>
-        <option value="b"><li>Canal B</li></option>
-        <option value="rg"><li>Canales rg</li></option>
-        <option value="gb"><li>Canales gb</li></option>
-        <option value="rb"><li>Canales rb</li></option>
+      <optgroup label='Mostrar canales:' class='optgr'>
+        <option value='r'><li>Canal R</li></option>
+        <option value='g'><li>Canal G</li></option>
+        <option value='b'><li>Canal B</li></option>
+        <option value='rg'><li>Canales rg</li></option>
+        <option value='gb'><li>Canales gb</li></option>
+        <option value='rb'><li>Canales rb</li></option>
       </optgroup>
     </ul>
   </select></p>
 
-  <input type="checkbox" id="resalMovi">Radio button sin uso hasta ahora<br><br>
+  <input type='checkbox' id='resalMovi'>Radio button sin uso hasta ahora<br><br>
   
-  <div id="vidMos" class="vidRela">
-    <button id="vidOcuBut">Ocultar video original</button>
+  <div id='vidMos' class='vidRela'>
+    <button id='vidOcuBut'>Ocultar video original</button>
     <h2>Video original:</h2>
-    <video autoplay id="video"></video>
+    <video autoplay id='video'></video>
   </div>
-  <div id="vidOcu" class="vidRela">
-    <button id="vidMosBut">Mostrar video original</button>
+  <div id='vidOcu' class='vidRela'>
+    <button id='vidMosBut'>Mostrar video original</button>
   </div>
 
   
-  <canvas id="canvas"></canvas>
+  <canvas id='canvas'></canvas>
   <h2>Alterado:</h2>
-  <canvas id="canvasRGB"></canvas>
+  <canvas id='canvasRGB'></canvas>
 
   <script>
     var data, dataRe; //dataUx
@@ -80,11 +82,11 @@
     const canvasRGB = document.querySelector('#canvasRGB');
     let contextRGB = canvasRGB.getContext('2d');
 
-    var marErCol = document.getElementById("marErCol");
-    var typeFil = document.getElementById("typeFil");
+    var marErCol = document.getElementById('marErCol');
+    var typeFil = document.getElementById('typeFil');
 
-    vidMos = document.getElementById("vidMos");
-    vidOcu = document.getElementById("vidOcu");
+    vidMos = document.getElementById('vidMos');
+    vidOcu = document.getElementById('vidOcu');
   
     var x=0;
     var y=0;
@@ -105,7 +107,7 @@
          ideal: 1080,
          max: 1440,*
        },*/
-        //facingMode: "enviroment"
+        //facingMode: 'enviroment'
       },
     };
 
@@ -124,7 +126,7 @@
       while(x == 0 || y == 0);
       canvasRGB.width = canvas.width = x;
       canvasRGB.height = canvas.height = y;
-      document.getElementById("currentResolution").innerText = `${x} x ${y}`;
+      document.getElementById('currentResolution').innerText = `${x} x ${y}`;
       await sleep(1000);
       context.drawImage(video, 0, 0);
       dataRe = context.getImageData(0, 0, x, y).data;
@@ -143,14 +145,14 @@
 
       for (let i = 1; i <= toDlong / 4; i++) {
         switch (actTypeFil) {
-          case 'l':
+          case 'l': //Luminosidad
             let pi = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
             dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = pi;
-          break;  //Tomar luminosidad
+          break;
 
           case 'o': break;
 
-          case 'mip':
+          case 'mip': //Movimiento particular de cada canal, invertido
             for(let j=4; j>1; j--){ //Analyses RGB values
               let anteP = dataRe[i * 4 - j]; //Píxel antíguo
               let actuP = data[i * 4 - j];  //Píxel actual
@@ -160,20 +162,7 @@
               }
             }
           break;
-
-          case 'msl':
-            let actu = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
-            let reci = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
-            /**/if(actu - reci < -25 || actu - reci > 25){
-              dataRe[i * 4 - 4] = 0;
-              dataRe[i * 4 - 3] = reci;
-              dataRe[i * 4 - 2] = 0;
-            }else{
-              dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
-            }
-          break;
-
-          case 'msp':
+          case 'msp'://Movimiento particular de cada canal, el resto negro
             for (let j = 4; j > 1; j--) { //Analyses RGB values
               let anteP = dataRe[i * 4 - j]; //Píxel antíguo
               let actuP = data[i * 4 - j];  //Píxel actual
@@ -186,11 +175,50 @@
             }
           break;
 
+          //Movimiento por cambio de luminosidad sobre margen, mostrar luminosidad en verde
+          case 'msl':
+            let actu = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+            let reci = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            if (Math.abs(actu - reci) > colRed) {
+              dataRe[i * 4 - 4] = 0;
+              dataRe[i * 4 - 3] = reci;
+              dataRe[i * 4 - 2] = 0;
+            } else {
+              dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
+            }
+          break;
+
+          //Taza de cambio luminosidad, mostrado cambio en verde
+          case 'mtl':
+            let pres = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+            let pasa = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            dataRe[i * 4 - 4] = 0;
+            dataRe[i * 4 - 3] = Math.abs(pres - pasa)*2;
+            dataRe[i * 4 - 2] = 0;
+
+            if(Math.abs(pres - pasa) * 2>255){
+              console.log("nos pasamos");
+            }
+          break;
+
+          //Cambio absoluto de luminosidad, verde o negro
+          case 'mla':
+            let abac = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+            let abre = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+            if (Math.abs(abac - abre) > colRed) {
+              dataRe[i * 4 - 4] = 0;
+              dataRe[i * 4 - 3] = 255;
+              dataRe[i * 4 - 2] = 0;
+            } else {
+              dataRe[i * 4 - 4] = dataRe[i * 4 - 3] = dataRe[i * 4 - 2] = 0;
+            }
+        break;
+
+          ////////////////Sólo movimiento en ciertos canales
           case 'msr':
             let antePr = dataRe[i * 4 - 4]; //Píxel antíguo
             let actuPr = data[i * 4 - 4];  //Píxel actual
             if (antePr - colRed > actuPr || antePr + colRed < actuPr) {
-              //Actualy nothing happens    255 - actuP;
               pl++;
             } else {
               dataRe[i * 4 - 4] = 0;
@@ -198,11 +226,10 @@
             dataRe[i * 4 - 3] = 0;
             dataRe[i * 4 - 2] = 0;
           break;
-          /*case 'msg':
+          case 'msg':
             let antePg = dataRe[i * 4 - 3]; //Píxel antíguo
             let actuPg = data[i * 4 - 3];  //Píxel actual
             if (antePg - colRed > actuPg || antePg + colRed < actuPg) {
-              //Actualy nothing happens    255 - actuP;
               pl++;
             } else {
               dataRe[i * 4 - 3] = 0;
@@ -214,15 +241,15 @@
             let antePb = dataRe[i * 4 - 2]; //Píxel antíguo
             let actuPb = data[i * 4 - 2];  //Píxel actual
             if (antePb - colRed > actuPb || antePb + colRed < actuPb) {
-              //Actualy nothing happens    255 - actuP;
               pl++;
             } else {
               dataRe[i * 4 - 2] = 0;
             }
             dataRe[i * 4 - 4] = 0;
             dataRe[i * 4 - 3] = 0;
-          break;*/
+          break;
 
+          //Ver canales por separado
           case 'r':
             dataRe[i * 4 - 3] = 0;
             dataRe[i * 4 - 2] = 0;
@@ -266,18 +293,18 @@
 
       dataRe = data;
       const finTime = Date.now();
-      document.getElementById("currentFPS").innerText = `${Math.round(10000/(finTime-iniTime))/10}`;
-      document.getElementById("currentP").innerText = `${finTime - iniTime}`;
+      document.getElementById('currentFPS').innerText = `${Math.round(10000/(finTime-iniTime))/10}`;
+      document.getElementById('currentP').innerText = `${finTime - iniTime}`;
       console.log(pl);
     };
 
-    document.getElementById("vidMosBut").addEventListener("click", function(){
-      vidOcu.style.display = "none";
-      vidMos.style.display = "initial";
+    document.getElementById('vidMosBut').addEventListener('click', function(){
+      vidOcu.style.display = 'none';
+      vidMos.style.display = 'initial';
     });
-    document.getElementById("vidOcuBut").addEventListener("click", function () {
-        vidMos.style.display = "none";
-        vidOcu.style.display = "initial";
+    document.getElementById('vidOcuBut').addEventListener('click', function () {
+        vidMos.style.display = 'none';
+        vidOcu.style.display = 'initial';
       });
 
 /*
