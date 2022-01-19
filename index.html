@@ -42,6 +42,7 @@
         <option value='msl'><li>Por cambio de luminosidad(meh)</li></option>
         <option value='mtl' selected><li>Taza de cambio luminosidad x2</li></option>
         <option value='mla'><li>Cambio absoluto (buuu)</li></option>
+        <option value='mle'><li>Visualizar espectros</li></option>
         <option value='mpn'><li>píxeles nuevos (No disponible)</li></option>
         <option value='msr'><li>Sólo R</li></option>
         <option value='msg'><li>Sólo G</li></option>
@@ -145,8 +146,11 @@
       const toDlong = data.length;
       var pl=0;
 
-      if(actTypeFil!='mpn'){
+      if(actTypeFil!='mle' && actTypeFil != 'mpn'){
         matrix = [];
+        console.log("No vemos espectros");
+      }else{
+        console.log("Vemos espectros");
       };
 
       for (let i = 1; i <= toDlong / 4; i++) {
@@ -220,27 +224,46 @@
             }
         break;
 
-        //Cambio de luminosidad respecto a lo común, píxeles nuevos
-          case 'mpn':
-            //console.log("Si entramos");
-            let pnac = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
-            let pnre = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
-            if (matrix.length < i) {
-              matrix[i - 1] = pnre; //Para completar primera vista del entorno
-              break;
-            }else{
-              if(matrix[i-1]-pnre>0){ //O sea que es menos brilloso de lo normal
-                matrix[i - 1] -= (matrix[i - 1] - pnre)/1000;
-              }else if (matrix[i - 1] - pnre < 0) { //O sea que es más brilloso de lo normal
-                matrix[i - 1] += Math.abs(matrix[i - 1] - pnre) / 1000;
-              }
-              //matrix[i - 1] += pnre / (tiempoDe*30); //Añade ligero cambio
-            };
-
-            dataRe[i * 4 - 4] = 0;
-            dataRe[i * 4 - 3] = matrix[i-1];//Math.abs(pnac - pnre) * 2;
-            dataRe[i * 4 - 2] = 0;
+        //Visualizar espectros luminosos
+        case 'mle':
+          let pnac = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+          let pnre = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+          if (matrix.length < i) {
+            matrix[i - 1] = pnre; //Para completar primera vista del entorno
+            break;
+          } else {
+            if (matrix[i - 1] - pnre > 0) { //O sea que es menos brilloso de lo normal
+              matrix[i - 1] -= (matrix[i - 1] - pnre) / 100;
+            } else if (matrix[i - 1] - pnre < 0) { //O sea que es más brilloso de lo normal
+              matrix[i - 1] += Math.abs(matrix[i - 1] - pnre) / 100;
+            }
+          };
+          dataRe[i * 4 - 4] = 0;
+          dataRe[i * 4 - 3] = matrix[i - 1];//Math.abs(pnac - pnre) * 2;
+          dataRe[i * 4 - 2] = 0;
         break;
+
+        //Cambio de luminosidad respecto a lo común, píxeles nuevos
+        case 'mpn':
+          //let pnac = (data[i * 4 - 4] + data[i * 4 - 3] + data[i * 4 - 2]) / 3;
+          let pnrc = (dataRe[i * 4 - 4] + dataRe[i * 4 - 3] + dataRe[i * 4 - 2]) / 3;
+          if (matrix.length < i) {
+            matrix[i - 1] = pnrc; //Para completar primera vista del entorno
+            break;
+          }else{
+            //console.log('entramos');
+            if(matrix[i-1]-pnrc>0){ //O sea que es menos brilloso de lo normal
+              matrix[i - 1] -= (matrix[i - 1] - pnrc) / 5000;
+            }else if (matrix[i - 1] - pnrc < 0) { //O sea que es más brilloso de lo normal
+              matrix[i - 1] += Math.abs(matrix[i - 1] - pnrc) / 5000;
+            }
+            pl++;
+          };
+
+          dataRe[i * 4 - 4] = 0;
+          dataRe[i * 4 - 3] = Math.abs(matrix[i-1]-pnrc)*2;
+          dataRe[i * 4 - 2] = 0;
+        break;/*Agregar otro modo, para mostrar diferencia entre 2 últimos fotogramas, no entre el penúltimo y el promedio*/
 
           ////////////////Sólo movimiento en ciertos canales
           case 'msr':
@@ -311,6 +334,7 @@
         };
 
       }
+      //console.log(matrix.length);
 
       var aDisplay = contextRGB.createImageData(x, y);
       var aData = aDisplay.data;
