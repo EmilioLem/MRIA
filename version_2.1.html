@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRIA 2.0</title>
+  <link rel="shortcut icon" href="./favicon2.ico">
+  <style>
+    * {
+      color: white;
+      background: black;
+    }
+  
+    canvas {
+      background: black;
+      border: 3px solid blue;
+      margin: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- YEah, just... -->
+  
+  <!-- Ends... section -->
+
+  
+
+
+  <p>Tiempo usado en cada fotograma: <sp id="tOcup"></sp>de descanso)</p>
+  <p>FPS: <sp id="fpsAch"></sp></p>
+  <p>% de cambio Zombie: <input type="number" id="Zper" value="2" step="0.01"></p>
+  <video autoplay id="video" style="display: none;"></video>
+  <canvas id="videoCanvas"></canvas>
+  <canvas id="zombieCanvas"></canvas>
+
+  <script>
+    const pW=1080, pH=720, frameRate = 30, tDescanso = 20; //ms
+    const video = document.getElementById("video");
+    var Vctx, Zctx;
+    var ZdataW = []; //para algoritmo Zombie
+    const constraints = {
+      video: {
+        //16:9 aspect ratio
+        //https://en.wikipedia.org/wiki/List_of_common_resolutions
+        width: {
+          ideal: pW//ideal: 16//640//320//256
+          /*min: 1280,
+          ideal: 1920,
+          max: 2560,*/
+        },
+        height: {
+          ideal: pH//ideal: 16//480//240//144
+          /*min: 720,
+          ideal: 1080,
+          max: 1440,*/
+        },
+        //facingMode: 'enviroment'
+      },
+    };
+    window.onload = async function startVideo(){
+      const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = videoStream;
+
+      var videoCanvas = document.getElementById("videoCanvas");
+      videoCanvas.width = pW;
+      videoCanvas.height = pH;
+      Vctx = videoCanvas.getContext("2d");
+
+      var zombieCanvas = document.getElementById("zombieCanvas");
+      zombieCanvas.width = pW;
+      zombieCanvas.height = pH;
+      Zctx = zombieCanvas.getContext("2d");
+
+      ////////////////////
+      setInterval(() => { Vctx.drawImage(video, 0, 0) }, 1000 / frameRate); //Mantiene actualizado el canvas con video original
+      console.clear();
+      work();
+    }
+    
+    function work(){
+      let tim = Date.now();
+
+      let Vdata = Vctx.getImageData(0, 0, pW, pH).data;
+      console.time("1");
+      
+      var Warray = [];
+      for(let i=1; i<Vdata.length / 4; i++){
+        //Cómo organizo la información!!!
+        /*
+          - Array con mini-arrays RGB & luminosidad :O
+          - Array con objeto, de una misma clase.
+          - 2 booleanos, si pertenece fielmente a "zona oscura o clara"
+        128*/
+
+
+
+        let lumL = (Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3; //luminosidad local
+        //console.log(":)");
+        
+        Warray.push(lumL > 192 ? 255 : (lumL < 64 ? 0 : 128)/*{
+          lv: lumL, //luminosidad valor
+          lp: lumL > 192 ? "white" : (lumL < 64 ? "black" : "gray"), //Se necesita paréntesis? //palabra
+          ln: lumL > 192 ? 255     : (lumL < 64 ? 0       : 128), //Se necesita paréntesis? //número
+          r: Vdata[i * 4 - 4],
+          g: Vdata[i * 4 - 3],
+          b: Vdata[i * 4 - 2],
+        }*/);
+      }
+      
+      console.timeEnd("1");
+      var Zdisplay = Zctx.createImageData(pW, pH);
+      var Zdata = Zdisplay.data;
+      //console.time("slow");
+      /*let Zper = Math.abs(document.getElementById("Zper").value);
+      let mantiZ = 1 - Zper / 100;
+      let nuevoZ = Zper / 100;
+      for(let i=0; i<Vdata.length; i++){
+        if (i % 4 == 3) {
+          Zdata[i] = 255; //alfa chanel
+        } else {
+          if(ZdataW[i] == undefined){
+            ZdataW[i] = Zdata[i] = Vdata[i];
+          }else{
+            ZdataW[i] = Zdata[i] = (ZdataW[i] * mantiZ + Vdata[i] * nuevoZ);
+            //let difZ = ZdataW[i] - Zdata[i];
+            //ZdataW[i] = Zdata[i] = ZdataW[i] - difZ * 0.1;// * mantiZ + Vdata[i] * nuevoZ;
+          }
+        }
+      }*/
+      //console.timeEnd("slow");
+      for(let i=0; i < Vdata.length/4; i++){
+        Zdata[i * 4 - 4] = Warray[i];
+        Zdata[i * 4 - 3] = Warray[i];
+        Zdata[i * 4 - 2] = Warray[i];
+        Zdata[i * 4 - 1] = 255;
+      }
+
+      Zctx.putImageData(Zdisplay, 0, 0);
+
+      let tot = Date.now() - tim + tDescanso;
+      document.getElementById("tOcup").innerText = tot + `ms (incluídos los ${tDescanso} ms `;
+      document.getElementById("fpsAch").innerText = Math.round(1000 / tot);
+      setTimeout(work, tDescanso);
+    }
+
+  </script>
+
+</body>
+</html>
