@@ -29,12 +29,17 @@
 
   <p>Tiempo usado en cada fotograma: <sp id="tOcup"></sp>de descanso)</p>
   <p>FPS: <sp id="fpsAch"></sp></p>
-  <p>% de cambio Zombie: <input type="number" id="Zper" value="2" step="0.01"></p>
+  <p>Aumentos de contraste: <input type="number" id="Cper" value="25" step="0.01"></p>
   <video autoplay id="video" style="display: none;"></video>
   <canvas id="videoCanvas"></canvas>
   <canvas id="zombieCanvas"></canvas>
 
   <script>
+    /*/Ideas...........
+    - Ver la "diferencia" (de luminosidad & color) entre vecinos
+      Sólo comparar pocos, y aplicar resultado a todos.
+    - IA de pocos "píxeles", 
+    //End ideas*/
     const pW=1080, pH=720, frameRate = 30, tDescanso = 20; //ms
     const video = document.getElementById("video");
     var Vctx, Zctx;
@@ -82,33 +87,51 @@
       let tim = Date.now();
 
       let Vdata = Vctx.getImageData(0, 0, pW, pH).data;
-      console.time("1");
+      console.time("lum");
       
-      var Warray = [];
+      var Larray = [];
+      //var RGBarray = [];
+      var Darray = []; //Diference array
       for(let i=1; i<Vdata.length / 4; i++){
-        //Cómo organizo la información!!!
-        /*
-          - Array con mini-arrays RGB & luminosidad :O
-          - Array con objeto, de una misma clase.
-          - 2 booleanos, si pertenece fielmente a "zona oscura o clara"
-        128*/
-
-
-
-        let lumL = (Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3; //luminosidad local
-        //console.log(":)");
+        //let lumL = ;
         
-        Warray.push(lumL > 192 ? 255 : (lumL < 64 ? 0 : 128)/*{
-          lv: lumL, //luminosidad valor
-          lp: lumL > 192 ? "white" : (lumL < 64 ? "black" : "gray"), //Se necesita paréntesis? //palabra
-          ln: lumL > 192 ? 255     : (lumL < 64 ? 0       : 128), //Se necesita paréntesis? //número
-          r: Vdata[i * 4 - 4],
-          g: Vdata[i * 4 - 3],
-          b: Vdata[i * 4 - 2],
-        }*/);
+        Larray.push((Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3);
+        /*
+          //lumL > 192 ? 255     : (lumL < 64 ? 0       : 128), //Se necesita paréntesis? //número
+          Vdata[i * 4 - 4],
+          Vdata[i * 4 - 3],
+          Vdata[i * 4 - 2]]);*/
       }
+      console.timeEnd("lum");
+
+
+
+
+
+      //let cuenta = 0;
+      let Cper = Math.abs(document.getElementById("Cper").value);
+      for(let i=1; i<Larray.length; i+=3){ //   /9!!!
+        function ch(index, offset){
+          return Larray[index + offset] == undefined? 0 : Larray[index + offset];
+        }
+        /*let p =(Larray[(i - 1) - pW] + Larray[(i) - pW] + Larray[(i + 1) - pW] +
+                Larray[(i - 1)     ]                    + Larray[(i + 1)     ] +
+                Larray[(i - 1) + pW] + Larray[(i) - pW] + Larray[(i + 1) + pW]) / 8;*/
+        let p = //ch(i, -1 - pW) + ch(i, - pW) + ch(i, +1 - pW)
+            ch(i, -1) + ch(i, +1);
+          //+ ch(i, -1 + pW) + ch(i, + pW) + ch(i, +1 + pW);
+        p /= 2;
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+
+        //console.log(i);
+        //cuenta++;
+      }
+      //console.log(cuenta);
       
-      console.timeEnd("1");
+      
+      
       var Zdisplay = Zctx.createImageData(pW, pH);
       var Zdata = Zdisplay.data;
       //console.time("slow");
@@ -130,9 +153,10 @@
       }*/
       //console.timeEnd("slow");
       for(let i=0; i < Vdata.length/4; i++){
-        Zdata[i * 4 - 4] = Warray[i];
-        Zdata[i * 4 - 3] = Warray[i];
-        Zdata[i * 4 - 2] = Warray[i];
+        //let lumL = (Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3;
+        Zdata[i * 4 - 4] = Darray[i];
+        Zdata[i * 4 - 3] = Darray[i];
+        Zdata[i * 4 - 2] = Darray[i];
         Zdata[i * 4 - 1] = 255;
       }
 
