@@ -1,0 +1,3 @@
+- Change names of files to simply "v1.0", etc.
+- Learn to have github on visual studio code, and "auto save code on github through visual studio code".
+- Learn how to "edit code online" (gitHub).
