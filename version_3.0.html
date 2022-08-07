@@ -1,0 +1,173 @@
+
+
+
+
+
+
+
+
+
+<!-- Fail!!!! No logro copiar un canvas a otro -->
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Just some test...</title>
+  <style>
+    *{
+      background-color: black;
+      color: white;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sCanvas" width="640" height="480"></canvas>
+  <canvas id="rCanvas" width="640" height="480"></canvas>
+  <video autoplay id="video"></video>
+
+  <script>
+    let myS = document.getElementById("sCanvas");
+    let myR = document.getElementById("rCanvas");
+    const video = document.getElementById("video");
+    ctxS = myS.getContext("2d");
+    ctxR = myR.getContext("2d");
+    const pW = myS.width, pH = myS.height, frameRate = 30, tDescanso = 20;
+    const constraints = {
+        video: {
+          //16:9 aspect ratio
+          //https://en.wikipedia.org/wiki/List_of_common_resolutions
+          width: {
+            ideal: pW//ideal: 16//640//320//256
+            /*min: 1280,
+            ideal: 1920,
+            max: 2560,*/
+          },
+          height: {
+            ideal: pH//ideal: 16//480//240//144
+            /*min: 720,
+            ideal: 1080,
+            max: 1440,*/
+          },
+          //facingMode: 'enviroment'
+        },
+      };
+
+    console.log(pW);
+    console.log(pH);
+    
+    const matrixG = Array(pH); //Almacena[#fila][#columna]
+    for(let i=0; i<pH; i++){
+      matrixG[i] = Array(pW);
+    }
+
+    /*ctxS.beginPath();
+    ctxS.moveTo(170, 80);
+    ctxS.bezierCurveTo(130, 100, 130, 150, 230, 150);
+    ctxS.bezierCurveTo(250, 180, 320, 180, 340, 150);
+    ctxS.bezierCurveTo(420, 150, 420, 120, 390, 100);
+    ctxS.bezierCurveTo(430, 40, 370, 30, 340, 50);
+    ctxS.bezierCurveTo(320, 5, 250, 20, 250, 50);
+    ctxS.bezierCurveTo(200, 5, 150, 20, 170, 80);
+    ctxS.closePath();
+    ctxS.lineWidth = 5;
+    ctxS.fillStyle = '#8ED6FF';
+    ctxS.fill();
+    ctxS.strokeStyle = '#0000ff';
+    ctxS.stroke();*/
+
+    window.onload  = async function goe(){ 
+
+      const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = videoStream;
+
+      
+
+      ////////////////////
+      setInterval(() => { ctxS.drawImage(video, 0, 0) }, 1000 / frameRate);
+
+
+      /*ctxS.beginPath();
+      ctxS.moveTo(170, 80);
+      ctxS.bezierCurveTo(130, 100, 130, 150, 230, 150);
+      ctxS.bezierCurveTo(250, 180, 320, 180, 340, 150);
+      ctxS.bezierCurveTo(420, 150, 420, 120, 390, 100);
+      ctxS.bezierCurveTo(430, 40, 370, 30, 340, 50);
+      ctxS.bezierCurveTo(320, 5, 250, 20, 250, 50);
+      ctxS.bezierCurveTo(200, 5, 150, 20, 170, 80);
+      ctxS.closePath();
+      ctxS.lineWidth = 5;
+      ctxS.fillStyle = '#8ED6FF';
+      ctxS.fill();
+      ctxS.strokeStyle = '#0000ff';
+      ctxS.stroke();*/
+      
+      var Sdata = ctxS.getImageData(0, 0, pW, pH).data;
+      //console.log(Sdata);
+      var cuenta = 0;
+
+      /*Dos modos de atacar el problema:
+        - Loopear ambas cordenadas de la matriz
+        - Recorrer el array uni_dimensional, y con módulos y divisiones acomodarlo en la matriz
+      */
+
+      //- Loopear ambas cordenadas de la matriz
+      for(let i=0; i<pH; i++){  //#fila
+        for(let j=0; j<pW; j++){  //#col
+          matrixG[i][j] = (/* pW*i+j es el pixel en cuestión*/
+          Sdata[(pW * i + j + 1) * 4 - 4] + //Aquí estoy revisando...
+          Sdata[(pW * i + j + 1) * 4 - 3] + 
+          Sdata[(pW * i + j + 1) * 4 - 2] ) / 3;
+          if(matrixG[i][j] != 0){
+            cuenta++;
+          }
+        }
+      }
+
+      //- Recorrer el array uni_dimensional, y con módulos y divisiones acomodarlo en la matriz
+      for(let i=0; i<Sdata.length/4; i++){
+        matrixG[Math.floor(i / pW)][i % pW] = (
+          Sdata[(i + 1) * 4 - 4] +
+          Sdata[(i + 1) * 4 - 3] +
+          Sdata[(i + 1) * 4 - 2] 
+        ) / 3;
+        if (matrixG[Math.floor(i / pW)][i % pW] != 0) {
+          cuenta++;
+        }
+      }
+
+
+      console.log(matrixG);
+      console.log(`Hay ${cuenta} píxeles diferentes de 0`);
+
+      var Rdisplay = ctxR.createImageData(pW, pH);
+      var Rdata = Rdisplay.data;
+      for (let i = 0; i < pH; i++) {  //#fila
+        for (let j = 0; j < pW; j++) {  //#col
+
+          Rdata[(pW * i + j + 1) * 4 - 4] = 0;
+          Rdata[(pW * i + j + 1) * 4 - 3] = matrixG[i][j];
+          Rdata[(pW * i + j + 1) * 4 - 2] = 0;
+          Rdata[(pW * i + j + 1) * 4 - 4] = 0;
+          
+        }
+      }
+
+      console.log(Rdata);
+
+      ctxR.putImageData(Rdisplay, 0, 0);
+    };
+  </script>
+</body>
+</html>

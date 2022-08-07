@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRIA 2.0</title>
+  <link rel="shortcut icon" href="./favicon2.ico">
+  <style>
+    * {
+      color: white;
+      background: black;
+    }
+  
+    canvas {
+      background: black;
+      border: 3px solid blue;
+      margin: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- <p>Tiempo usado en cada fotograma: <sp id="tOcup"></sp>de descanso)</p>
+  <p>FPS: <sp id="fpsAch"></sp></p>
+  <p>Aumentos de contraste: <input type="number" id="Cper" value="25" step="0.01"></p>
+  <video autoplay id="video" style="display: none;"></video> -->
+  <canvas id="videoCanvas"></canvas>
+  <canvas id="zombieCanvas"></canvas>
+
+  <script>
+    /*/Ideas...........
+    - Ver la "diferencia" (de luminosidad & color) entre vecinos
+      Sólo comparar pocos, y aplicar resultado a todos.
+    - IA de pocos "píxeles", 
+    //End ideas*/
+    const pW=1080, pH=720, frameRate = 30, tDescanso = 20; //ms
+    //const video = document.getElementById("video");
+    var Vctx, Zctx;
+    var ZdataW = []; //para algoritmo Zombie
+    const constraints = {
+      video: {
+        //16:9 aspect ratio
+        //https://en.wikipedia.org/wiki/List_of_common_resolutions
+        width: {
+          ideal: pW//ideal: 16//640//320//256
+          /*min: 1280,
+          ideal: 1920,
+          max: 2560,*/
+        },
+        height: {
+          ideal: pH//ideal: 16//480//240//144
+          /*min: 720,
+          ideal: 1080,
+          max: 1440,*/
+        },
+        //facingMode: 'enviroment'
+      },
+    };
+    window.onload = async function startVideo(){
+      /*const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = videoStream;*/
+
+      var videoCanvas = document.getElementById("videoCanvas");
+      videoCanvas.width = pW;
+      videoCanvas.height = pH;
+      Vctx = videoCanvas.getContext("2d");
+
+      var zombieCanvas = document.getElementById("zombieCanvas");
+      zombieCanvas.width = pW;
+      zombieCanvas.height = pH;
+      Zctx = zombieCanvas.getContext("2d");
+
+      ////////////////////
+      //setInterval(() => { Vctx.drawImage(video, 0, 0) }, 1000 / frameRate); //Mantiene actualizado el canvas con video original
+
+      Vctx.beginPath();
+      Vctx.moveTo(170, 80);
+      Vctx.bezierCurveTo(130, 100, 130, 150, 230, 150);
+      Vctx.bezierCurveTo(250, 180, 320, 180, 340, 150);
+      Vctx.bezierCurveTo(420, 150, 420, 120, 390, 100);
+      Vctx.bezierCurveTo(430, 40, 370, 30, 340, 50);
+      Vctx.bezierCurveTo(320, 5, 250, 20, 250, 50);
+      Vctx.bezierCurveTo(200, 5, 150, 20, 170, 80);
+      Vctx.closePath();
+      Vctx.lineWidth = 5;
+      Vctx.fillStyle = '#8ED6FF';
+      Vctx.fill();
+      Vctx.strokeStyle = '#0000ff';
+      Vctx.stroke();
+
+      console.clear();
+      work();
+    }
+    
+    function work(){
+      let tim = Date.now();
+
+      let Vdata = Vctx.getImageData(0, 0, pW, pH).data;
+      console.time("lum");
+      
+      var Larray = [];
+      //var RGBarray = [];
+      var Darray = []; //Diference array
+      for(let i=1; i<Vdata.length / 4; i++){
+        //let lumL = ;
+        
+        Larray.push((Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3);
+        /*
+          //lumL > 192 ? 255     : (lumL < 64 ? 0       : 128), //Se necesita paréntesis? //número
+          Vdata[i * 4 - 4],
+          Vdata[i * 4 - 3],
+          Vdata[i * 4 - 2]]);*/
+      }
+      console.timeEnd("lum");
+
+
+
+
+
+      //let cuenta = 0;
+      let Cper = Math.abs(document.getElementById("Cper").value);
+      for(let i=1; i<Larray.length; i+=3){ //   /9!!!
+        function ch(index, offset){
+          return Larray[index + offset] == undefined? 0 : Larray[index + offset];
+        }
+        /*let p =(Larray[(i - 1) - pW] + Larray[(i) - pW] + Larray[(i + 1) - pW] +
+                Larray[(i - 1)     ]                    + Larray[(i + 1)     ] +
+                Larray[(i - 1) + pW] + Larray[(i) - pW] + Larray[(i + 1) + pW]) / 8;*/
+        let p = //ch(i, -1 - pW) + ch(i, - pW) + ch(i, +1 - pW)
+            ch(i, -1) + ch(i, +1);
+          //+ ch(i, -1 + pW) + ch(i, + pW) + ch(i, +1 + pW);
+        p /= 2;
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+        Darray.push(Math.abs(p- ch(i, 0)) * Cper);
+
+        //console.log(i);
+        //cuenta++;
+      }
+      //console.log(cuenta);
+      
+      
+      
+      var Zdisplay = Zctx.createImageData(pW, pH);
+      var Zdata = Zdisplay.data;
+      //console.time("slow");
+      /*let Zper = Math.abs(document.getElementById("Zper").value);
+      let mantiZ = 1 - Zper / 100;
+      let nuevoZ = Zper / 100;
+      for(let i=0; i<Vdata.length; i++){
+        if (i % 4 == 3) {
+          Zdata[i] = 255; //alfa chanel
+        } else {
+          if(ZdataW[i] == undefined){
+            ZdataW[i] = Zdata[i] = Vdata[i];
+          }else{
+            ZdataW[i] = Zdata[i] = (ZdataW[i] * mantiZ + Vdata[i] * nuevoZ);
+            //let difZ = ZdataW[i] - Zdata[i];
+            //ZdataW[i] = Zdata[i] = ZdataW[i] - difZ * 0.1;// * mantiZ + Vdata[i] * nuevoZ;
+          }
+        }
+      }*/
+      //console.timeEnd("slow");
+      for(let i=0; i < Vdata.length/4; i++){ //Eh!!! Empieza desde 0?
+        //let lumL = (Vdata[i * 4 - 4] + Vdata[i * 4 - 3] + Vdata[i * 4 - 2]) / 3;
+        Zdata[i * 4 - 4] = Darray[i]; //Eh!!! Empieza desde -4?
+        Zdata[i * 4 - 3] = Darray[i];
+        Zdata[i * 4 - 2] = Darray[i];
+        Zdata[i * 4 - 1] = 255;
+      }
+
+      Zctx.putImageData(Zdisplay, 0, 0);
+
+      let tot = Date.now() - tim + tDescanso;
+      document.getElementById("tOcup").innerText = tot + `ms (incluídos los ${tDescanso} ms `;
+      document.getElementById("fpsAch").innerText = Math.round(1000 / tot);
+      setTimeout(work, tDescanso);
+    }
+
+
+    //What I Will need to create a... plygon from the points:
+    //https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Animation_depicting_the_gift_wrapping_algorithm.gif/220px-Animation_depicting_the_gift_wrapping_algorithm.gif
+
+
+    //En versión 3.1 ir "agregando" cosas para que se parezca a versión 2.1 (tipo reducirlo a lo escencial) y después cambiar por mejor código, lentamente, de versión 3.0
+  </script>
+
+</body>
+</html>
