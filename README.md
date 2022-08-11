@@ -17,3 +17,5 @@ Instead, **please _work_ weekly**, at least.
 Here's our logo (hover to see the title text):
 
 ![](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+
+##### If something bad happens, try looking for [gitHub Current Status](https://www.githubstatus.com/)
