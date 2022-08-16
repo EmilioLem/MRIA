@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <video muted autoplay id="vid"></video>
+  <script>
+    //https://jsfiddle.net/rxbe1zj3/
+    //navigator.getUserMedia is long deprecated. Use navigator.mediaDevices.getUserMedia now.
+    //Mess with this document https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
+    navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: 'environment' //or "user"
+        }
+      })
+        .then(stream => vid.srcObject = stream)
+        .catch(console.error);
+      
+    //Doesn't work on mobile.. unless we use HTTP (HitHub or... node.js alternatives to serve content on the globe)
+
+    //https://emiliolem.github.io/MRIA/version_2.1 
+    //De ahí puedo sacar el procedimiento "normal" para pasar imagen de un canvas a otro.
+  </script>
+</body>
+</html>
