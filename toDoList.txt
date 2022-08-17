@@ -1,5 +1,3 @@
-- Change names of files to simply "v1.0", etc.
-- Learn to have github on visual studio code, and "auto save code on github through visual studio code".
-- Learn how to "edit code online" (gitHub).
-- GitHub Desktop
-- GitHub branches (fireship.io / freecodecamp)
+- Tener modo "abierto" para declarar en tiempo real los colores y tipo de discriminación ocupada para distinguir un camino. 
+- Buscar por zonas, ir reduciendo hasta llegar a una zona pequeña donde haya varios colores interesantes.
+- Promediar diferencia de distancia entre cada punto y el "centro de gravedad" de todos, ¿Ver si coincide con la cantidad de puntos? 
