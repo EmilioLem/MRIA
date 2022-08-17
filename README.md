@@ -1,20 +1,26 @@
 # MRIA
 ### Machine Recognition Image Analyser
-`*Some poetry describing the beautiful of computers looking to our world...*`
-_Underscores also do italiks, like *_
+###### You ~can~ _can't_ consult the main page at [emiliolem.github.io/MRIA](https://emiliolem.github.io/MRIA/) (welcome page **not ready** yet :)
 
+`emiliolem.github.io/MRIA/` is the place where everything is stored ;)
 
+`v` stans for _version_
 
+`The first number` corresponds to _major changes..._, mainly for _"methods of searching/rendering"_
 
+`The second number` corresponds to _minor changes_, some ideas...
 
-(personal note: Some day in the future... take ~~all~~ of the freeCodeCamp "github full course" videos :)
-###### (but not very soon, please :)
+and `Third number` **(not implemented** yet) will be... ultra minor changes, just working.
 
-Instead, **please _work_ weekly**, at least.
+.
 
-[I'm an inline-style link](https://www.google.com)
+.
 
-Here's our logo (hover to see the title text):
+.
+
+.
+
+.
 
 ![](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
 
