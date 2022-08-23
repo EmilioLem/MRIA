@@ -24,4 +24,5 @@ and `Third number` **(not implemented** yet) will be... ultra minor changes, jus
 
 ![](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
 
+##### Why am I using JS? Because is not that bad: [Check this video](https://www.youtube.com/watch?v=rczu8kc8JZA)
 ##### If something bad happens, try looking for [gitHub Current Status](https://www.githubstatus.com/)
