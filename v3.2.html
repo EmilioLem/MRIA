@@ -24,12 +24,12 @@
       })
         .then(stream => {
       vid.srcObject = stream;
-      setUpCanvas();
+      setTimeout(setUpCanvas, 777);
     })
         .catch(console.error);
-     const Vcanvas = document.getElementById("Vcanvas");
-     const Vctx = Vcanvas.getContext("2d");
-     const videoO = document.getElementById("vid");
+     var Vcanvas = document.getElementById("Vcanvas");
+     var Vctx = Vcanvas.getContext("2d");
+     var videoO = document.getElementById("vid");
     function setUpCanvas(){
       Vcanvas.width = videoO.width;
       Vcanvas.height = videoO.height;
