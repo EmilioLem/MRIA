@@ -8,6 +8,7 @@
 </head>
 <body>
   <video muted autoplay id="vid"></video>
+  <canvas id="Vcanvas"></canvas>
   <script>
     //https://jsfiddle.net/rxbe1zj3/
     //navigator.getUserMedia is long deprecated. Use navigator.mediaDevices.getUserMedia now.
@@ -21,13 +22,19 @@
           facingMode: 'environment' //or "user"
         }
       })
-        .then(stream => vid.srcObject = stream)
+        .then(stream => {
+      vid.srcObject = stream;
+      setUpCanvas();
+    })
         .catch(console.error);
-      
-    //Doesn't work on mobile.. unless we use HTTP (HitHub or... node.js alternatives to serve content on the globe)
-
-    //https://emiliolem.github.io/MRIA/version_2.1 
-    //De ahí puedo sacar el procedimiento "normal" para pasar imagen de un canvas a otro.
+     const Vcanvas = document.getElementById("Vcanvas");
+     const Vctx = Vcanvas.getContext("2d");
+     const videoO = document.getElementById("vid");
+    function setUpCanvas(){
+      Vcanvas.width = videoO.width;
+      Vcanvas.height = videoO.height;
+    }
+     
   </script>
 </body>
 </html>
