@@ -17,7 +17,12 @@ and `Third number` **(not implemented** yet) will be... ultra minor changes, jus
 .
 
 .
+### Working versions:
 
+[v1.0](https://emiliolem.github.io/MRIA/v1.0), [v2.1](https://emiliolem.github.io/MRIA/v2.1), 
+
+
+### Most recent version: [3.2](https://emiliolem.github.io/MRIA/v3.2)
 .
 
 .
