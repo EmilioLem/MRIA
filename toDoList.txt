@@ -3,6 +3,7 @@
 - Tener modo "abierto" para declarar en tiempo real los colores y tipo de discriminación ocupada para distinguir un camino. 
 - Buscar por zonas, ir reduciendo hasta llegar a una zona pequeña donde haya varios colores interesantes.
 - Promediar diferencia de distancia entre cada punto y el "centro de gravedad" de todos, ¿Ver si coincide con la cantidad de puntos? 
+- Convertir con función sigmoidea F (x) = 1/ (1 + e^ (-x)) el color de cada píxel RGB vs. luminosidad. Probar con poca resolución.
 
 - Teniendo histograma en una región mediana (3-30)^2, si el promedio de desviación de cada píxel al promedio (en canales separados vs. Hue/Light/Saturation) es "chico" (definir dinámicamente) igualar todos.
 
