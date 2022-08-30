@@ -7,13 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    *{
+    * {
       background-color: black;
       color: white;
       /* -webkit-box-shadow: -4px 7px 34px 13px rgba(255,255,255,0.62);  */
-      
+
     }
-    video, canvas{
+    video{
+      display: none;
+    }
+
+    canvas {
       box-shadow: -4px 7px 34px 13px white;
       margin: 30px;
     }
@@ -21,51 +25,83 @@
 </head>
 
 <body>
-  <video muted autoplay id="videoO"></video>
+  <!-- Video property "autoplay" was disabled because it needed focus on teh video to reproduce, instead, it is manually played furter away -->
+  <video muted id="videoO"></video>
   <canvas id="Vcanvas"></canvas>
+  <canvas id="Mcanvas"></canvas>
+
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  
   <script>
-    
-    
-    
+
+
+
     //https://jsfiddle.net/rxbe1zj3/
     //navigator.getUserMedia is long deprecated. Use navigator.mediaDevices.getUserMedia now.
     //Mess with this document https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
-    
-    const Vcanvas = document.getElementById("Vcanvas");
+
+    const Vcanvas = document.getElementById("Vcanvas"); // Video canvas, the original video.
+    const Mcanvas = document.getElementById("Mcanvas"); //Movement Canvas
     var Vctx = Vcanvas.getContext("2d");
+    var Mctx = Mcanvas.getContext("2d");
     const videoO = document.getElementById("videoO");
+
+
+    //Desde aquí reduzco a usable, y en video aumento, según escala en frameRendering
+    const pW = 1920 / 2; //128;
+    const pH = 1080 / 2; //72;
     
-    
-    const pW = 128;
-    const pH = 72;
+    var dataO = [], dataM = [], aData = [];
 
     navigator.mediaDevices.getUserMedia({ // <-- gets the media
       audio: false,
       video: {
-        width: pW,//{min: 192, ideal: 1080, max: 1920},
-        height: pH,//{min: 144, ideal: 720, max: 1080},
+        width: pW * 2,//{min: 192, ideal: 1080, max: 1920},
+        height: pH * 2,//{min: 144, ideal: 720, max: 1080},
         frameRate: { min: 1, ideal: 30, max: 120 },
         facingMode: 'environment' //or "user"
       }
     }).then(stream => { //-> place the media on the video
-        videoO.srcObject = stream;
+      videoO.srcObject = stream;
 
-        Vcanvas.width = videoO.width = pW;
-        Vcanvas.height = videoO.height = pH;
-        //setTimeout(setUpCanvas, 777);
-        setInterval(frameRendering, 33.33);
-      }).catch(console.error);
-
-      function frameRendering(){
-        Vctx.drawImage(videoO, 0, 0)
-      }
+      Vcanvas.width = Mcanvas.width = pW;
+      Vcanvas.height = Mcanvas.height = pH;
       
+      videoO.play();
 
-    /*function setUpCanvas() {
-      //Vcanvas.width = videoO.width = 128;
-      //Vcanvas.height = videoO.height = 72;
-      alert("Ready");
-    }*/
+      setInterval(frameRendering, 33.33);
+      setTimeout(movementEffect, 33.33);
+    }).catch(console.error);
+
+    function frameRendering() {
+      //context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
+      Vctx.drawImage(videoO, 0, 0, pW * 2, pH * 2, 0, 0, pW, pH);
+      dataO = Vctx.getImageData(0, 0, pW, pH).data;
+    }
+
+
+    function movementEffect() {
+      console.time("movementEffect");
+      dataM = dataO.slice();
+      var aDisplay = Mctx.createImageData(pW, pH);
+      aData = aDisplay.data; //Tengo que recorrer el array.
+
+      for (let i = 0; i < dataM.length; i++) {
+        //aData[i] = i % 4 == 0? 0 : 255 - dataM[i];
+        if(i%4 == 3){
+          aData[i] = dataM[i];
+        }else{
+          aData[i] = 255 - dataM[i];
+        }
+      }
+
+      Mctx.putImageData(aDisplay, 0, 0);
+      console.timeEnd("movementEffect");
+      setTimeout(movementEffect, 33.33);
+    }
+
+    //Sólo por diversión, dejar ese canvas y función, y hacer otro similar, que vaya guardando y desechando fotogramas anteriores, y muestre la diferencia ¿Aumentada 2x? entre ellos. Intervalo distinto, igual.
 
   </script>
 </body>
