@@ -1,4 +1,6 @@
 - Texto que diga resolución actual de cámara, permitir cambiar de entre una lista, guardar en localStorage, y redireccionarlo a recargar la página.
+- Texto actualizable de tiempo usado por cada filtro! 
+- Poner las estadísticas, al menos la grafiquita de trabajo mío general, pero buscar del repositorio.
 
 - Tener modo "abierto" para declarar en tiempo real los colores y tipo de discriminación ocupada para distinguir un camino. 
 - Buscar por zonas, ir reduciendo hasta llegar a una zona pequeña donde haya varios colores interesantes.
