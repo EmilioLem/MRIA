@@ -25,8 +25,13 @@
 </head>
 
 <body>
-  <!-- Video property "autoplay" was disabled because it needed focus on teh video to reproduce, instead, it is manually played furter away -->
-  <video muted id="videoO"></video>
+  <!-- Video property "autoplay" was disabled because it needed focus on the video to reproduce, instead, it is manually played furter away
+  
+  Also, the "muted" property was taken away, and set the volume to 0, to enable sound later on.-->
+  <br>
+  <p>Sound enable? <input type="checkbox" id="volumeCB"> <b>Please use carefuly</b></p>
+  <br>
+  <video id="videoO"></video>
   <canvas id="Vcanvas"></canvas>
   <canvas id="Mcanvas"></canvas>
 
@@ -55,7 +60,7 @@
     var dataO = [], dataM = [], aData = [];
 
     navigator.mediaDevices.getUserMedia({ // <-- gets the media
-      audio: false,
+      audio: true,
       video: {
         width: pW * 2,//{min: 192, ideal: 1080, max: 1920},
         height: pH * 2,//{min: 144, ideal: 720, max: 1080},
@@ -69,20 +74,21 @@
       Vcanvas.height = Mcanvas.height = pH;
       
       videoO.play();
+      videoO.volume = 0;
 
       setInterval(frameRendering, 33.33);
-      setTimeout(movementEffect, 33.33);
+      setTimeout(invertColor, 33.33);
     }).catch(console.error);
 
     function frameRendering() {
       //context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
-      Vctx.drawImage(videoO, 0, 0, pW * 2, pH * 2, 0, 0, pW, pH);
+      Vctx.drawImage(videoO, 0, 0, pW * 2, pH * 2, 0, 0, pW, pH); //Quad-pixel
       dataO = Vctx.getImageData(0, 0, pW, pH).data;
     }
 
 
-    function movementEffect() {
-      console.time("movementEffect");
+    function invertColor() {
+      console.time("invertColor");
       dataM = dataO.slice();
       var aDisplay = Mctx.createImageData(pW, pH);
       aData = aDisplay.data; //Tengo que recorrer el array.
@@ -97,11 +103,24 @@
       }
 
       Mctx.putImageData(aDisplay, 0, 0);
-      console.timeEnd("movementEffect");
-      setTimeout(movementEffect, 33.33);
+      console.timeEnd("invertColor");
+      setTimeout(invertColor, 33.33);
     }
 
     //Sólo por diversión, dejar ese canvas y función, y hacer otro similar, que vaya guardando y desechando fotogramas anteriores, y muestre la diferencia ¿Aumentada 2x? entre ellos. Intervalo distinto, igual.
+
+    //Ends "video" functions, starts tytpicall functions.
+    document.getElementById("volumeCB").addEventListener("click", function(){
+      //DON'T USE ALERT's, an annoying sound might appear and will prolongue them.
+      if(this.checked){
+        videoO.volume = 1;
+        //alert("was checked!");
+      }else{
+        videoO.volume = 0;
+        //alert("Was unchecked");
+      }
+      return; //Please help me to solve "audio check"
+    });
 
   </script>
 </body>
