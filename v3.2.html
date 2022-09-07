@@ -31,33 +31,37 @@
   <br>
   <p>Sound enable? <input type="checkbox" id="volumeCB"> <b>Please use carefuly</b></p>
   <br>
+  <p>Color picker: <input type="color" value="#00FF00"></p>
+  <br>
+  <p>Margin error: <input type="range" min="1" max="128" value="30"></p>
+  
   <video id="videoO"></video>
   <canvas id="Vcanvas"></canvas>
   <canvas id="Mcanvas"></canvas>
-
+  
   <br><br><br><br><br>
   <br><br><br><br><br>
   
   <script>
+    
 
-
-
+    
     //https://jsfiddle.net/rxbe1zj3/
     //navigator.getUserMedia is long deprecated. Use navigator.mediaDevices.getUserMedia now.
     //Mess with this document https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
-
+    
     const Vcanvas = document.getElementById("Vcanvas"); // Video canvas, the original video.
     const Mcanvas = document.getElementById("Mcanvas"); //Movement Canvas
     var Vctx = Vcanvas.getContext("2d");
     var Mctx = Mcanvas.getContext("2d");
     const videoO = document.getElementById("videoO");
-
+    
 
     //Desde aquí reduzco a usable, y en video aumento, según escala en frameRendering
     const pW = 1920 / 2; //128;
     const pH = 1080 / 2; //72;
     
-    var dataO = [], dataM = [], aData = [];
+    var dataO, dataM, aData = [];
 
     navigator.mediaDevices.getUserMedia({ // <-- gets the media
       audio: true,
@@ -69,30 +73,30 @@
       }
     }).then(stream => { //-> place the media on the video
       videoO.srcObject = stream;
-
+      
       Vcanvas.width = Mcanvas.width = pW;
       Vcanvas.height = Mcanvas.height = pH;
       
       videoO.play();
       videoO.volume = 0;
-
+      
       setInterval(frameRendering, 33.33);
       setTimeout(invertColor, 33.33);
     }).catch(console.error);
-
+    
     function frameRendering() {
       //context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
       Vctx.drawImage(videoO, 0, 0, pW * 2, pH * 2, 0, 0, pW, pH); //Quad-pixel
       dataO = Vctx.getImageData(0, 0, pW, pH).data;
     }
 
-
+    
     function invertColor() {
       console.time("invertColor");
       dataM = dataO.slice();
       var aDisplay = Mctx.createImageData(pW, pH);
       aData = aDisplay.data; //Tengo que recorrer el array.
-
+      
       for (let i = 0; i < dataM.length; i++) {
         //aData[i] = i % 4 == 0? 0 : 255 - dataM[i];
         if(i%4 == 3){
@@ -101,14 +105,14 @@
           aData[i] = 255 - dataM[i];
         }
       }
-
+      
       Mctx.putImageData(aDisplay, 0, 0);
       console.timeEnd("invertColor");
       setTimeout(invertColor, 33.33);
     }
-
+    
     //Sólo por diversión, dejar ese canvas y función, y hacer otro similar, que vaya guardando y desechando fotogramas anteriores, y muestre la diferencia ¿Aumentada 2x? entre ellos. Intervalo distinto, igual.
-
+    
     //Ends "video" functions, starts tytpicall functions.
     document.getElementById("volumeCB").addEventListener("click", function(){
       //DON'T USE ALERT's, an annoying sound might appear and will prolongue them.
@@ -122,7 +126,12 @@
       return; //Please help me to solve "audio check"
     });
 
-  </script>
+    </script>
 </body>
 
 </html>
+<!-- Se convertirá a RGB:
+https://javascript.plainenglish.io/convert-hex-to-rgb-with-javascript-4984d16219c3
+Y luego... pues ya, resaltar ese color con cierto grado de diferencia, "margen de error.
+
+Proceso inverso, RGB a HEX -> https://qawithexperts.com/article/javascript/rgb-to-hex-and-hex-to-rgb-using-javascript/405#:~:text=Hex%20to%20RGB%20using%20Javascript%20We%20can%20convert,will%20perform%20these%20operations%20for%20Green%20and%20Blue." -->
