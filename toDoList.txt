@@ -10,3 +10,5 @@
 - Teniendo histograma en una región mediana (3-30)^2, si el promedio de desviación de cada píxel al promedio (en canales separados vs. Hue/Light/Saturation) es "chico" (definir dinámicamente) igualar todos.
 
 Revisar Keep, traer todas las ideas, dividir en... pasos, metas.
+
+- Si se quiere agregar alguna métrica... usar convertidor nativo de Js para números grandes: 1k, 2M, etc. https://www.youtube.com/watch?v=FUngCjDzFDo
