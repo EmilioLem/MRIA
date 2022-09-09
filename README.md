@@ -4,7 +4,7 @@
 
 `emiliolem.github.io/MRIA/` is the place where everything is stored ;)
 
-`v` stans for _version_
+`v` stands for _version_
 
 `The first number` corresponds to _major changes..._, mainly for _"methods of searching/rendering"_
 
@@ -17,13 +17,18 @@ and `Third number` **(not implemented** yet) will be... ultra minor changes, jus
 .
 
 .
+
+### Working documentation:
+
+[binnacle](https://emiliolem.github.io/MRIA/bitacora.txt)
+
 ### Working versions:
 
 [v1.0](https://emiliolem.github.io/MRIA/v1.0),
 [v2.1](https://emiliolem.github.io/MRIA/v2.1)... 
 
 
-### Most recent versio: [3.2](https://emiliolem.github.io/MRIA/v3.2)
+### Most recent version: [3.2](https://emiliolem.github.io/MRIA/v3.2)
 .
 
 .
