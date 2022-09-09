@@ -12,3 +12,6 @@
 Revisar Keep, traer todas las ideas, dividir en... pasos, metas.
 
 - Si se quiere agregar alguna métrica... usar convertidor nativo de Js para números grandes: 1k, 2M, etc. https://www.youtube.com/watch?v=FUngCjDzFDo
+
+
+- RGB to HSL: https://www.rapidtables.com/convert/color/rgb-to-hsv.html
