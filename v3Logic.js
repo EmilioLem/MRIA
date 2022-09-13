@@ -4,14 +4,15 @@ function frameRendering() {
   dataO = Vctx.getImageData(0, 0, pW, pH).data;
 }
 
+//Every image array goes like... RGBA_RGBA_RGBA... right?
+
 function invertColor() {
   console.time("invertColor");
-  dataI = dataO.slice();
+  dataI = dataO.slice();  //The data we will manipulate
   let iDisplay = Ictx.createImageData(pW, pH);
-  iData = iDisplay.data; //Tengo que recorrer el array.
+  iData = iDisplay.data; //The array that will revive the data
       
   for (let i = 0; i < dataI.length; i++) {
-    //iData[i] = i % 4 == 0? 0 : 255 - dataI[i];
     if(i%4 == 3){
       iData[i] = dataI[i];
     }else{
@@ -21,31 +22,96 @@ function invertColor() {
       
   Ictx.putImageData(iDisplay, 0, 0);
   console.timeEnd("invertColor");
-  setTimeout(invertColor, 33.33);
+  setTimeout(invertColor, 3.33);
 }
 
 function hslColor(){
   console.time("hslColor");
-  dataHSL = dataO.slice();
+  dataHSL = dataO.slice();  //The data we will manipulate
   let hslDisplay = HSLctx.createImageData(pW, pH);
-  hslData = hslDisplay.data; //Tengo que recorrer el array.
+  hslData = hslDisplay.data; //The array that will revive the data
 
-  for (let i = 0; i < dataHSL.length; i++) {
-    //hslData[i] = i % 4 == 0? 0 : 255 - dataHSL[i];
-    if (i % 4 == 3) {
-      hslData[i] = dataHSL[i];
-    } else {
-      hslData[i] = 255 - dataHSL[i];
-    }
+  for(let i=1; i<=dataHSL.length / 4; i++){
+
+    let hslR = RGBToHSL(dataHSL[i*4-4], dataHSL[i*4-3], dataHSL[i*4-2], 'b');
+    dataHSL[i*4-4] = hslR[0]; //Hue
+    dataHSL[i*4-3] = hslR[1]; //Saturation
+    dataHSL[i*4-2] = hslR[2]; //Value
+
+    hslData[i*4-4] = dataHSL[i*4-4];
+    hslData[i*4-3] = dataHSL[i*4-3];
+    hslData[i*4-2] = dataHSL[i*4-2];
+    hslData[i*4-1] = dataHSL[i*4-1];
   }
+  
 
   HSLctx.putImageData(hslDisplay, 0, 0);
   console.timeEnd("hslColor");
-  setTimeout(hslColor, 33.33);
+  setTimeout(hslColor, 3.33);
 
 
-  /*Se convertirá a RGB: https://javascript.plainenglish.io/convert-hex-to-rgb-with-javascript-4984d16219c3 Y luego... pues ya, resaltar ese color con cierto grado de diferencia, "margen de error.
+  /*Se convertirá a RGB, Y luego... pues ya, resaltar ese color con cierto grado de diferencia, "margen de error.
 
-  Proceso inverso, RGB a HEX -> https://qawithexperts.com/article/javascript/rgb-to-hex-and-hex-to-rgb-using-javascript/405#:~:text=Hex%20to%20RGB%20using%20Javascript%20We%20can%20convert,will%20perform%20these%20operations%20for%20Green%20and%20Blue." 
   */
+}
+
+function RGBToHSL(r,g,b,t) { //t stands for type
+  /*Thanks "Elie G." for sharing your answer on StackOverFlow...
+  https://stackoverflow.com/questions/39118528/rgb-to-hsl-conversion */
+  // Make r, g, and b fractions of 1
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  // Find greatest and smallest channel values
+  let cmin = Math.min(r,g,b),
+      cmax = Math.max(r,g,b),
+      delta = cmax - cmin,
+      h = 0,
+      s = 0,
+      l = 0;
+
+  // Calculate hue
+  // No difference
+  if (delta == 0)
+    h = 0;
+  // Red is max
+  else if (cmax == r)
+    h = ((g - b) / delta) % 6;
+  // Green is max
+  else if (cmax == g)
+    h = (b - r) / delta + 2;
+  // Blue is max
+  else
+    h = (r - g) / delta + 4;
+
+  h = Math.round(h * 60);
+    
+  // Make negative hues positive behind 360°
+  if (h < 0)
+      h += 360;
+
+  // Calculate lightness
+  l = (cmax + cmin) / 2;
+
+  // Calculate saturation
+  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    
+
+  ////////////////
+  if(t=='n'){
+    //The normal % way
+    // Multiply l and s by 100
+    s = +(s * 100).toFixed(1);
+    l = +(l * 100).toFixed(1);
+    return "hsl(" + h + "," + s + "%," + l + "%)";
+  }else if(t=='b'){
+    //b, byte, 256 format
+    h = h / 45 * 32;
+    s = Math.floor(s * 256); //The problem might rely here...
+    l = Math.floor(l * 256);
+    return [h, s, l];
+  }else{
+    return [255, 255, 255]; //(More notorious the white than the black)
+  }
 }
