@@ -73,6 +73,11 @@
     const videoO = document.getElementById("videoO");    
 
     //Desde aquí reduzco a usable, y en video aumento, según escala en frameRendering
+    if(localStorage.getItem("pW")){
+      alert(`El pW es ${localStorage.getItem("pW")}`);
+    }else{
+      alert("No hay pW almacenado");
+    }
     const pW = 1920 / 2; //128;
     const pH = 1080 / 2; //72;
     
