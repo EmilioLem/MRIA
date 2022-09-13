@@ -31,12 +31,14 @@ function hslColor(){
   let hslDisplay = HSLctx.createImageData(pW, pH);
   hslData = hslDisplay.data; //The array that will revive the data
 
+  let HSLchanelS = document.getElementById('HSLselector').value;
+
   for(let i=1; i<=dataHSL.length / 4; i++){
 
     let hslR = RGBToHSL(dataHSL[i*4-4], dataHSL[i*4-3], dataHSL[i*4-2], 'b');
-    dataHSL[i*4-4] = hslR[0]; //Hue
-    dataHSL[i*4-3] = hslR[1]; //Saturation
-    dataHSL[i*4-2] = hslR[2]; //Value
+    dataHSL[i*4-4] = (HSLchanelS=='H')? hslR[0] : 0; //Hue
+    dataHSL[i*4-3] = (HSLchanelS=='S')? hslR[1] : 0; //Saturation
+    dataHSL[i*4-2] = (HSLchanelS=='L')? hslR[2] : 0; //Luminosity
 
     hslData[i*4-4] = dataHSL[i*4-4];
     hslData[i*4-3] = dataHSL[i*4-3];
