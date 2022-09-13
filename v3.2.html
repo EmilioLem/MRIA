@@ -76,12 +76,12 @@
     if(!localStorage.getItem('pW') || !localStorage.getItem('pH')){
       localStorage.setItem('pW', '1920');
       localStorage.setItem('pH', '1080');
-      alert('Resolución: 1920*1080');
+      console.log('Resolución: 1920*1080');
     }else{
       //No hay nada por el momento
     }
-    const pW = localStorage.getItem('pW') / 2; //128;
-    const pH = localStorage.getItem('pH') / 2; //72;
+    const pW = JSON.parse(localStorage.getItem('pW')) / 2; //128;
+    const pH = JSON.parse(localStorage.getItem('pH')) / 2; //72;
     
     var dataO, dataI, dataHSL, iData, hslData = [];
 
