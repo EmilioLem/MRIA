@@ -32,6 +32,14 @@
   <br>
   <p>Sound enable? <input type="checkbox" id="volumeCB"> <b>Please use carefuly</b></p>
 
+  <select id="HSLselector">
+    <option value="H">Hue</option>
+    <option value="S" selected>Saturation</option>
+    <option value="L">Light</option>
+  </select>
+  <br>
+  <p>--------------------</p>
+  <br>
   <p>Invert Color Filter? <input type="checkbox" id="invertCF"> This will be... deleted</p>
   
   <p>Color picker: <input type="color" value="#00FF00"></p>
@@ -62,8 +70,7 @@
     var Vctx = Vcanvas.getContext("2d");
     var Ictx = Icanvas.getContext("2d");
     var HSLctx = HSLcanvas.getContext("2d");
-    const videoO = document.getElementById("videoO");
-    
+    const videoO = document.getElementById("videoO");    
 
     //Desde aquí reduzco a usable, y en video aumento, según escala en frameRendering
     const pW = 1920 / 2; //128;
