@@ -73,13 +73,15 @@
     const videoO = document.getElementById("videoO");    
 
     //Desde aquí reduzco a usable, y en video aumento, según escala en frameRendering
-    if(localStorage.getItem("pW")){
-      alert(`El pW es ${localStorage.getItem("pW")}`);
+    if(!localStorage.getItem('pW') || !localStorage.getItem('pH')){
+      localStorage.setItem('pW', '1920');
+      localStorage.setItem('pH', '1080');
+      alert('Resolución: 1920*1080');
     }else{
-      alert("No hay pW almacenado");
+      //No hay nada por el momento
     }
-    const pW = 1920 / 2; //128;
-    const pH = 1080 / 2; //72;
+    const pW = localStorage.getItem('pW') / 2; //128;
+    const pH = localStorage.getItem('pH') / 2; //72;
     
     var dataO, dataI, dataHSL, iData, hslData = [];
 
