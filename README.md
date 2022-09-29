@@ -16,6 +16,15 @@ and `Third number` **(not implemented** yet) will be... ultra minor changes, jus
 
 .
 
+#### I found this useful (and probably unique, standard :) method of **data normalization**:
+
+_y = (x - min) / (max - min)_
+_y = (18.8 - (-10)) / (30 - (-10))_
+_y = 28.8 / 40_
+_y = 0.72_
+
+.
+
 .
 
 ### Working documentation:
