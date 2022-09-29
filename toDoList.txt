@@ -1,17 +1,28 @@
 - Texto que diga resolución actual de cámara, permitir cambiar de entre una lista, guardar en localStorage, y redireccionarlo a recargar la página.
-- Texto actualizable de tiempo usado por cada filtro! 
-- Poner las estadísticas, al menos la grafiquita de trabajo mío general, pero buscar del repositorio.
+- Texto actualizable de tiempo usado por cada filtro... mejor seleccionar el único filtro activo de entre una lista desplegable.
 
-- Tener modo "abierto" para declarar en tiempo real los colores y tipo de discriminación ocupada para distinguir un camino. 
-- Buscar por zonas, ir reduciendo hasta llegar a una zona pequeña donde haya varios colores interesantes.
-- Promediar diferencia de distancia entre cada punto y el "centro de gravedad" de todos, ¿Ver si coincide con la cantidad de puntos? 
-- Convertir con función sigmoidea F (x) = 1/ (1 + e^ (-x)) el color de cada píxel RGB vs. luminosidad. Probar con poca resolución.
+- Analizar/clasificar formas respecto al promedio de distancias de cada punto al centro de gravedad de una figura.
+- Convertir con función sigmoidea F (x) = 1/ (1 + e^ (-x)) ó con tangente inversa (tan-1) el color de cada píxel RGB vs. luminosidad, para 
+  aumentar contraste en alguna zona... 
 
-- Teniendo histograma en una región mediana (3-30)^2, si el promedio de desviación de cada píxel al promedio (en canales separados vs. Hue/Light/Saturation) es "chico" (definir dinámicamente) igualar todos.
+- Tener modo de visión en ulta baja luminosidad:
+    - Invertir el brillo (y = 255-x)
+    - Elevar al cuadrado (o a cualquier otra potencia) (y = x * x)
+    - Dividir entre el valor máximo para normalizar (y = x / 255)
+    - Invertir nuevamente el brillo (y = 255-x)
+   O... simplemente crecer linealmente (y = ax) pero debemríamos mantener una luminosidad constante... Obtener imagenes RAW.
 
-Revisar Keep, traer todas las ideas, dividir en... pasos, metas.
+- Teniendo histograma en una región mediana (3-30)^2, si el promedio de desviación de cada píxel al promedio (en canales separados vs. Hue/Light/Saturation) es "chico" (definir dinámicamente) igualar todos, porque es una textura uniforme... parte del mismo objeto.
+- Pero si esta diferencia es "grande", es un sitio de alto contraste... buscar aumentar más? o considerarlos como "bordes" -> filtro con puros bordes booleanos.
 
 - Si se quiere agregar alguna métrica... usar convertidor nativo de Js para números grandes: 1k, 2M, etc. https://www.youtube.com/watch?v=FUngCjDzFDo
 
-
 - RGB to HSL: https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+
+- Permitir definir dinámicamente (y en un futuro buscar automáticamente) el área de funcionamiento/búsqueda de distintos filtros, y claro tenerlos en timpers separados y más rápidos.
+
+- Para trabajos con HSL, reducir drásticamente la resolución (dividir, hacer entero, y multiplicar)... o sólo mantener chico, trabajarlo, y reescalarlo cuando se muestre al usuario.
+
+- Filtro con Saturación y luminosidad al máximo.
+
+Apuntes cool de "álgebra lineal" y cálculo? 
