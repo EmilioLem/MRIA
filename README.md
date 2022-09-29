@@ -16,11 +16,14 @@ and `Third number` **(not implemented** yet) will be... ultra minor changes, jus
 
 .
 
-#### I found this useful (and probably unique, standard :) method of **data normalization**:
+#### I found [this](https://machinelearningmastery.com/how-to-improve-neural-network-stability-and-modeling-performance-with-data-scaling/) useful (and probably unique, standard :) method of **data normalization** with an example:
 
-_y = (x - min) / (max - min)_
+_**y = (x - min) / (max - min)**_
+
 _y = (18.8 - (-10)) / (30 - (-10))_
+
 _y = 28.8 / 40_
+
 _y = 0.72_
 
 .
