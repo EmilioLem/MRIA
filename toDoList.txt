@@ -2,7 +2,7 @@
 - Texto actualizable de tiempo usado por cada filtro... mejor seleccionar el único filtro activo de entre una lista desplegable.
 
 - Analizar/clasificar formas respecto al promedio de distancias de cada punto al centro de gravedad de una figura.
-- Convertir con función sigmoidea F (x) = 1/ (1 + e^ (-x)) ó con tangente inversa (tan-1) el color de cada píxel RGB vs. luminosidad, para 
+- Convertir con función sigmoidea modificada F (x) = 1/ (1 + e^ (-x)) ó con tangente inversa (tan-1) el color de cada píxel RGB vs. luminosidad, para 
   aumentar contraste en alguna zona... 
 
 - Tener modo de visión en ulta baja luminosidad:
@@ -26,3 +26,7 @@
 - Filtro con Saturación y luminosidad al máximo.
 
 Apuntes cool de "álgebra lineal" y cálculo? 
+
+- Fórmula de normalización para redes neuronales (y = (x-min) / (max-min)
+  podría ser muy útil para analizar ciertos fragmentos del círulo cromático...
+  o 
