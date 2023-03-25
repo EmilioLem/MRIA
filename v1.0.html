@@ -123,12 +123,12 @@
     window.onload = async function startVideo() {
       const videoStream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = videoStream;      
-      do{
+      /*do{
         x = video.videoWidth;
         y = video.videoHeight;
         await sleep(20);
-      }
-      while(x == 0 || y == 0);
+      }*/
+      //while(x == 0 || y == 0);
       canvasRGB.width = canvas.width = x;
       canvasRGB.height = canvas.height = y;
       document.getElementById('currentResolution').innerText = `${x} x ${y}`;
