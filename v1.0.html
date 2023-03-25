@@ -92,26 +92,26 @@
     vidMos = document.getElementById('vidMos');
     vidOcu = document.getElementById('vidOcu');
   
-    var x=0;
-    var y=0;
+    var x=640; //esto lo cambié de 0
+    var y=480; //Esto lo cambié de 0
     var matrix = [];
 
     const video = document.querySelector('#video');
     const constraints = {
       video: {
         //16:9 aspect ratio
-        /*width: {
-         ideal: 640//320//256
+        width: {
+         ideal: x//640//320//256
          /*min: 1280,
          ideal: 1920,
-         max: 2560,*
+         max: 2560,*/
        },
        height: {
-         ideal: 480//240//144
+         ideal: y//480//240//144
          /*min: 720,
          ideal: 1080,
-         max: 1440,*
-       },*/
+         max: 1440,*/
+       },
         facingMode: 'environment' //or "user"
       },
     };
